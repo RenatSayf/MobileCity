@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.main.MainFragment">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/deviceMacField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:layout_constraintTop_toTopOf="parent"
+        android:hint="Связанные устройства">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/deviceMacView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:text="Нет доступных устройств"
+            android:inputType="textMultiLine"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ProgressBar
+        android:id="@+id/progressAvailableDevices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/deviceMacField"
+        app:layout_constraintEnd_toEndOf="@+id/deviceMacField"
+        app:layout_constraintBottom_toBottomOf="@+id/deviceMacField"
+        tools:visibility="visible"
+        android:visibility="gone"
+        />
+
+<!--    <Button-->
+<!--        android:id="@+id/connectBtn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/createConnectBtn"-->
+<!--        android:text="Подключится к устройству"-->
+<!--        style="?attr/materialButtonOutlinedStyle"-->
+<!--        />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/createConnectBtn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/bluetoothVisibleBtn"-->
+<!--        android:text="Создать соединение"-->
+<!--        style="?attr/materialButtonOutlinedStyle"-->
+<!--        />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/bluetoothVisibleBtn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/scanBtn"-->
+<!--        android:text="Включить видимость"-->
+<!--        style="?attr/materialButtonOutlinedStyle"-->
+<!--        />-->
+
+    <Button
+        android:id="@+id/scanBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Запуск рассылки ADV"
+        style="?attr/materialButtonOutlinedStyle"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
