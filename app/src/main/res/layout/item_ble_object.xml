@@ -18,7 +18,8 @@
             android:textSize="24dp"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
