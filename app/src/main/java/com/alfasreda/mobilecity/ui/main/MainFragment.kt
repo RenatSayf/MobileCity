@@ -25,7 +25,7 @@ import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
 
 
-class MainFragment : Fragment(R.layout.main_fragment) {
+class MainFragment : Fragment() {
 
     private lateinit var binding: MainFragmentBinding
 
@@ -37,14 +37,13 @@ class MainFragment : Fragment(R.layout.main_fragment) {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+    ): View {
+        binding = MainFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = MainFragmentBinding.bind(view)
 
         val sid = ("ID00000004").substring(2)
         val namesSnd = sid.toByte()
@@ -60,7 +59,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         val advCallback = object : AdvertiseCallback() {
             override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
                 super.onStartSuccess(settingsInEffect)
-                binding.progressAvailableDevices.visibility = View.GONE
+
                 if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) return
                 bluetoothAdapter?.startLeScan(object : BluetoothAdapter.LeScanCallback {
                     override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
@@ -72,7 +71,7 @@ class MainFragment : Fragment(R.layout.main_fragment) {
             }
             override fun onStartFailure(errorCode: Int) {
                 super.onStartFailure(errorCode)
-                binding.progressAvailableDevices.visibility = View.GONE
+
             }
         }
 
@@ -89,13 +88,11 @@ class MainFragment : Fragment(R.layout.main_fragment) {
         }
 
         with(binding) {
-            scanBtn.setOnClickListener {
-                binding.progressAvailableDevices.visibility = View.VISIBLE
 
-                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
-                    bltAdvertiser?.startAdvertising(advSettings, advData, advCallback)
-                }
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+                bltAdvertiser?.startAdvertising(advSettings, advData, advCallback)
             }
+
         }
 
 
