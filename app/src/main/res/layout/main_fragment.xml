@@ -40,7 +40,39 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_city_objects"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_list"
+            app:layout_constraintEnd_toStartOf="@+id/btn_transport"
+            app:layout_constraintVertical_bias="1"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:drawableTop="@drawable/ic_home_white"
+            android:background="@color/blue"
+            android:text="Объекты"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:contentDescription="Отслеживание городской инфраструктуры"/>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_transport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/btn_city_objects"
+            app:layout_constraintTop_toBottomOf="@+id/rv_list"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1"
+            android:padding="16dp"
+            android:drawableTop="@drawable/ic_bus_white"
+            android:background="@color/blue"
+            android:text="Транспорт"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:contentDescription="Отслеживание транспорта"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
