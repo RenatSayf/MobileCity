@@ -25,7 +25,9 @@ class MainFragment : Fragment() {
 
     private lateinit var binding: MainFragmentBinding
 
-    private val mainVM: MainViewModel by activityViewModels()
+    private val mainVM: MainViewModel by activityViewModels(factoryProducer = {
+        MainViewModel.Factory()
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,13 +55,13 @@ class MainFragment : Fragment() {
 
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
-                mainVM.startScan()
+                mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode)
             }
 
             btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
-                mainVM.startScan()
+                mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
             }
 
@@ -98,7 +100,7 @@ class MainFragment : Fragment() {
                                     mainVM.startAdvertising()
                                 }
                                 else {
-                                    mainVM.stopAdvertising()
+                                    mainVM.stopBtScan()
                                 }
                             }
                         }
