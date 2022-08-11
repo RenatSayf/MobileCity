@@ -74,9 +74,7 @@ class MainViewModel(
             }
             override fun onAdvertisingError(errorCode: Int) {
 
-                btRepository.stopLowEnergyScan(object : BtRepository.IBtScanListener {
-                    override fun onLeScan(device: BtDevice) {}
-                })
+                btRepository.stopLowEnergyScan(null)
                 viewModelScope.launch {
                     _btState.value = BtState.ScanFailure(errorCode)
                 }
