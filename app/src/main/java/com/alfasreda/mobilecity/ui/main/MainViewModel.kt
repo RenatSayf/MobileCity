@@ -3,6 +3,7 @@
 package com.alfasreda.mobilecity.ui.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -19,22 +20,35 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    sealed class State {
-        object NotSupportBT: State()
-        object BtIsOn: State()
-        object BtIsOff: State()
-        object NoScanPermission: State()
-        data class ScanSuccess(val data: MutableList<BtDevice>): State()
-        data class ScanFailure(val errorCode: Int): State()
+    sealed class BtState {
+        object NotSupportBT: BtState()
+        object BtIsOn: BtState()
+        object BtIsOff: BtState()
+        object NoScanPermission: BtState()
+        data class NoPermission(val permission: String): BtState()
+        data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
+        data class ScanFailure(val errorCode: Int): BtState()
     }
 
-    private var _state = MutableStateFlow<State>(State.BtIsOff)
-    val state: StateFlow<State> = _state
-    fun setState(state: State) {
-        _state.value = state
+    private var _btState = MutableStateFlow<BtState>(BtState.BtIsOff)
+    val btState: StateFlow<BtState> = _btState
+    fun setBtState(btState: BtState) {
+        _btState.value = btState
     }
 
-    private val btDevices = mutableListOf<BtDevice>()
+    sealed class ScreenState {
+        object NothingMode: ScreenState()
+        object CityMode: ScreenState()
+        object TransportMode: ScreenState()
+    }
+
+    private var _screenState = MutableStateFlow<ScreenState>(ScreenState.NothingMode)
+    val screenState: StateFlow<ScreenState> = _screenState
+    fun setScreenState(state: ScreenState) {
+        _screenState.value = state
+    }
+
+    private val btDevices = mutableSetOf<BtDevice>()
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val bltAdvertiser = bluetoothAdapter?.bluetoothLeAdvertiser
 
@@ -49,64 +63,73 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
         .setConnectable(false)
         .build()
 
+    @SuppressLint("MissingPermission")
     fun startAdvertising() {
-        if (!app.checkPermission(Manifest.permission.BLUETOOTH_ADVERTISE)) {
-            bltAdvertiser?.startAdvertising(advSettings, advData, object : AdvertiseCallback() {
+        bltAdvertiser?.startAdvertising(advSettings, advData, object : AdvertiseCallback() {
 
-                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
-                    super.onStartSuccess(settingsInEffect)
+            override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                super.onStartSuccess(settingsInEffect)
 
-                    if (app.checkPermission(Manifest.permission.BLUETOOTH_SCAN)) {
+                bluetoothAdapter?.startLeScan(object : BluetoothAdapter.LeScanCallback {
+                    override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
+                        val btDevice = BtDevice(p0, p1, p2)
+                        btDevices.add(btDevice)
                         viewModelScope.launch {
-                            _state.emit(State.NoScanPermission)
+                            _btState.value = BtState.ScanSuccess(btDevices)
                         }
-                        return
                     }
-                    bluetoothAdapter?.startLeScan(object : BluetoothAdapter.LeScanCallback {
-                        override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
-                            val btDevice = BtDevice(p0, p1, p2)
-                            btDevices.add(btDevice)
-                            viewModelScope.launch {
-                                _state.emit(State.ScanSuccess(btDevices))
-                            }
-                        }
-                    })
-                }
-                override fun onStartFailure(errorCode: Int) {
-                    super.onStartFailure(errorCode)
+                })
+            }
+            override fun onStartFailure(errorCode: Int) {
+                super.onStartFailure(errorCode)
 
-                    viewModelScope.launch {
-                        _state.emit(State.ScanFailure(errorCode))
-                    }
+                viewModelScope.launch {
+                    _btState.value = BtState.ScanFailure(errorCode)
                 }
-            })
-        }
+            }
+        })
     }
 
     fun stopAdvertising() {
         if (app.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             bluetoothAdapter?.stopLeScan(object : BluetoothAdapter.LeScanCallback {
                 override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
-
+                    p0
+                    p1
+                    p2
                 }
             })
         }
     }
 
+    @SuppressLint("MissingPermission")
+    fun startScan() {
+        bluetoothAdapter?.startLeScan(
+        object : BluetoothAdapter.LeScanCallback {
+            override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
+                val btDevice = BtDevice(p0, p1, p2)
+                btDevices.add(btDevice)
+                viewModelScope.launch {
+                    _btState.value = BtState.ScanSuccess(btDevices)
+                }
+            }
+        })
+    }
+
     fun initBluetooth() {
         if (bluetoothAdapter == null) {
             viewModelScope.launch {
-                _state.emit(State.NotSupportBT)
+                _btState.value = BtState.NotSupportBT
             }
         }
         else if (!bluetoothAdapter.isEnabled) {
             viewModelScope.launch {
-                _state.emit(State.BtIsOff)
+                _btState.value = BtState.BtIsOff
             }
         }
         else {
             viewModelScope.launch {
-                _state.emit(State.BtIsOn)
+                _btState.value = BtState.BtIsOn
             }
         }
     }
