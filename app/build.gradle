@@ -80,4 +80,6 @@ dependencies {
 
     //Robolectric
     implementation 'org.robolectric:robolectric:4.8'
+
+    implementation 'com.airbnb.android:paris:2.0.0'
 }

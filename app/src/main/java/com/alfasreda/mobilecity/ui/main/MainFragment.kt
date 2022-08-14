@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.fondesa.kpermissions.allGranted
@@ -112,16 +113,28 @@ class MainFragment : Fragment() {
                 mainVM.screenState.collect { state ->
                     when(state) {
                         MainViewModel.ScreenState.NothingMode -> {
-                            btnCityObjects.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue))
-                            btnTransport.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue))
+                            btnCityObjects.style(R.style.AppButton)
+                            btnTransport.style(R.style.AppButton)
                         }
                         MainViewModel.ScreenState.CityMode -> {
-                            btnCityObjects.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.light_green))
-                            btnTransport.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue))
+                            btnCityObjects.apply {
+                                isSelected = true
+                                style(R.style.AppButtonSelected)
+                            }
+                            btnTransport.apply {
+                                isSelected = false
+                                style(R.style.AppButton)
+                            }
                         }
                         MainViewModel.ScreenState.TransportMode -> {
-                            btnCityObjects.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.blue))
-                            btnTransport.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.light_green))
+                            btnCityObjects.apply {
+                                isSelected = false
+                                style(R.style.AppButton)
+                            }
+                            btnTransport.apply {
+                                isSelected = true
+                                style(R.style.AppButtonSelected)
+                            }
                         }
                     }
                 }
