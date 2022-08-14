@@ -106,13 +106,13 @@ class MainViewModel(
     }
 
     fun initBluetooth() {
-        val adapter = btRepository.bluetoothAdapter
-        if (adapter == null) {
+        //val adapter = btRepository.bluetoothAdapter
+        if (!btRepository.isSupportBluetooth) {
             viewModelScope.launch {
                 _btState.value = BtState.NotSupportBT
             }
         }
-        else if (!adapter.isEnabled) {
+        else if (!btRepository.isEnabledBluetooth) {
             viewModelScope.launch {
                 _btState.value = BtState.BtIsOff
             }

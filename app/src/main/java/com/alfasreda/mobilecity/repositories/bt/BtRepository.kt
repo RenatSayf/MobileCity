@@ -12,9 +12,19 @@ import com.alfasreda.mobilecity.models.BtDevice
 
 open class BtRepository {
 
-    open val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
     private val bltAdvertiser = bluetoothAdapter?.bluetoothLeAdvertiser
+
+    open val isSupportBluetooth: Boolean
+        get() {
+            return bluetoothAdapter != null
+        }
+
+    open val isEnabledBluetooth: Boolean
+        get() {
+            return bluetoothAdapter?.isEnabled ?: false
+        }
 
     private val advSettings = AdvertiseSettings.Builder()
         .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
@@ -46,7 +56,7 @@ open class BtRepository {
     open fun startLowEnergyScan(listener: IBtScanListener) {
         bluetoothAdapter?.startLeScan(object : BluetoothAdapter.LeScanCallback {
                 override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
-                    val device = BtDevice(p0, p1, p2)
+                    val device = BtDevice(p1, p2)
                     listener.onLeScan(device)
                 }
             })
@@ -56,7 +66,7 @@ open class BtRepository {
     open fun stopLowEnergyScan(listener: IBtScanListener?) {
         bluetoothAdapter?.stopLeScan(object : BluetoothAdapter.LeScanCallback {
             override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
-                val device = BtDevice(p0, p1, p2)
+                val device = BtDevice(p1, p2)
                 listener?.onLeScan(device)
             }
         })

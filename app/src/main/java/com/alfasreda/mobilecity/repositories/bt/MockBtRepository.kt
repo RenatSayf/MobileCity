@@ -2,14 +2,19 @@
 
 package com.alfasreda.mobilecity.repositories.bt
 
-import android.bluetooth.BluetoothAdapter
 import com.alfasreda.mobilecity.models.BtDevice
 import kotlinx.coroutines.*
-import org.robolectric.shadows.ShadowBluetoothDevice
 
 class MockBtRepository : BtRepository() {
 
-    override val bluetoothAdapter: BluetoothAdapter? = super.bluetoothAdapter
+    override val isSupportBluetooth: Boolean
+        get() = true
+
+    override val isEnabledBluetooth: Boolean
+        get() = when {
+            isSupportBluetooth -> true
+            else -> false
+        }
 
     private var isScan = false
 
@@ -108,12 +113,10 @@ class MockBtRepository : BtRepository() {
 
     private val devices = listOf<BtDevice>(
         BtDevice(
-            device = ShadowBluetoothDevice.newInstance("24:6F:28:A9:93:3E"),
             rssi = -66,
             bytes = byteArray
         ),
         BtDevice(
-            device = ShadowBluetoothDevice.newInstance("24:6F:28:A9:93:4B"),
             rssi = -55,
             bytes = byteArray
         )
