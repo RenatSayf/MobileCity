@@ -3,9 +3,9 @@ package com.alfasreda.mobilecity.models
 import android.bluetooth.BluetoothDevice
 
 data class BtDevice(
+    val device: BluetoothDevice? = null,
     val rssi: Int,
-    val bytes: ByteArray?,
-    val device: BluetoothDevice? = null
+    val bytes: ByteArray?
 ) {
 
     var description: String = ""

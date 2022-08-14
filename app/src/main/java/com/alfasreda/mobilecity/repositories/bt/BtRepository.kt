@@ -56,7 +56,7 @@ open class BtRepository {
     open fun startLowEnergyScan(listener: IBtScanListener) {
         bluetoothAdapter?.startLeScan(object : BluetoothAdapter.LeScanCallback {
                 override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
-                    val device = BtDevice(p1, p2)
+                    val device = BtDevice(p0, p1, p2)
                     listener.onLeScan(device)
                 }
             })
@@ -66,7 +66,7 @@ open class BtRepository {
     open fun stopLowEnergyScan(listener: IBtScanListener?) {
         bluetoothAdapter?.stopLeScan(object : BluetoothAdapter.LeScanCallback {
             override fun onLeScan(p0: BluetoothDevice?, p1: Int, p2: ByteArray?) {
-                val device = BtDevice(p1, p2)
+                val device = BtDevice(p0, p1, p2)
                 listener?.onLeScan(device)
             }
         })
