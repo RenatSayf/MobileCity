@@ -17,7 +17,7 @@
         app:titleTextColor="@color/white"
         app:navigationIcon="@drawable/ic_arrow_back_white"
         android:contentDescription="Меню"
-        app:navigationContentDescription="Выход из приложеня"
+        app:navigationContentDescription="Назад"
         android:background="@color/blue"
         />
 
@@ -105,10 +105,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/AppButton"
+            android:padding="18dp"
+            android:text="Назад"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </androidx.appcompat.widget.LinearLayoutCompat>

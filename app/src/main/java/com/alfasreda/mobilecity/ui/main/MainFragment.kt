@@ -7,13 +7,17 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
@@ -25,6 +29,8 @@ import com.fondesa.kpermissions.extension.send
 class MainFragment : Fragment() {
 
     private lateinit var binding: MainFragmentBinding
+
+    private val speechVM: SpeechViewModel by activityViewModels()
 
     private val mainVM: MainViewModel by activityViewModels(factoryProducer = {
         MainViewModel.Factory()
@@ -41,6 +47,25 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        lifecycleScope.launchWhenStarted {
+            speechVM.state.collect { state ->
+                when(state) {
+                    SpeechViewModel.State.InitNotSuccess -> {
+
+                    }
+                    SpeechViewModel.State.LangMissingData -> {
+
+                    }
+                    SpeechViewModel.State.LangNotSupported -> {
+
+                    }
+                    SpeechViewModel.State.InitSuccess -> {
+
+                    }
+                }
+            }
+        }
+
         if (savedInstanceState == null) {
             permissionsBuilder(Manifest.permission.ACCESS_FINE_LOCATION).build().send(){ result ->
                 if (result.allGranted()) {
@@ -54,6 +79,10 @@ class MainFragment : Fragment() {
 
         with(binding) {
 
+            toolBar.setNavigationOnClickListener {
+                findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
+            }
+
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
                 mainVM.startBtScan()
@@ -65,6 +94,13 @@ class MainFragment : Fragment() {
                 mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
             }
+
+            btnCityObjects.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+
+                    return true
+                }
+            })
 
             lifecycleScope.launchWhenResumed {
 
@@ -144,6 +180,16 @@ class MainFragment : Fragment() {
 
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                return
+            }
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
