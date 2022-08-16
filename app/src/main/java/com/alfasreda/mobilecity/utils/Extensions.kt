@@ -39,6 +39,12 @@ fun Fragment.setUpToolBar(
             contentDescription = titleContentDescription
             requestFocus()
         }
-
     }
+}
+
+fun ByteArray.toHexList(): List<String> {
+    val list = this.map {
+        String.format("0x%02X", it)
+    }
+    return list
 }

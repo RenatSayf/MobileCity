@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.alfasreda.mobilecity.di.BtRepositoryModule
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.repositories.bt.BtRepository
+import com.alfasreda.mobilecity.utils.toHexList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -97,6 +98,8 @@ class MainViewModel(
 
         btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
             override fun onLeScan(device: BtDevice) {
+                val bytes = device.bytes
+                val hexList = bytes?.toHexList()
                 btDevices.add(device)
                 viewModelScope.launch {
                     _btState.value = BtState.ScanSuccess(btDevices)
