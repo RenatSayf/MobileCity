@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,7 +19,9 @@ import androidx.navigation.fragment.findNavController
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
+import com.alfasreda.mobilecity.utils.DoubleClickListener
 import com.alfasreda.mobilecity.utils.Speech
+import com.alfasreda.mobilecity.utils.setUpToolBar
 import com.alfasreda.mobilecity.utils.showSnackBar
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
@@ -98,22 +101,28 @@ class MainFragment : Fragment() {
 
         with(binding) {
 
-            toolBar.setNavigationOnClickListener {
+            setUpToolBar(
+                binding = includeAppBar,
+                iconResource = R.drawable.ic_main_menu_white,
+                iconContentDescription = "Перейти в главное меню",
+                title = "Главная",
+                titleContentDescription = "Это главный экран приложения"
+                )
+
+            includeAppBar.btnBackNavigation.setOnClickListener {
                 findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
             }
 
-            btnCityObjects.setOnLongClickListener {
+            btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
                 mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode)
-                true
             }
 
-            btnTransport.setOnLongClickListener {
+            btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
                 mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
-                true
             }
 
             lifecycleScope.launchWhenResumed {
@@ -201,8 +210,23 @@ class MainFragment : Fragment() {
 
         with(binding) {
 
-            btnCityObjects.setOnClickListener {
-                speechVM.speak(it.contentDescription.toString())
+            includeAppBar.root.forEach { view ->
+                view.setOnLongClickListener {
+                    val description = it.contentDescription
+                    if (!description.isNullOrEmpty()) {
+                        speechVM.speak(description.toString())
+                    }
+                    true
+                }
+            }
+            contentLayout.forEach { view ->
+                view.setOnLongClickListener {
+                    val description = it.contentDescription
+                    if (!description.isNullOrEmpty()) {
+                        speechVM.speak(description.toString())
+                    }
+                    true
+                }
             }
         }
 

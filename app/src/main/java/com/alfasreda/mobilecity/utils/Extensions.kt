@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.alfasreda.mobilecity.databinding.ToolBarBinding
 import com.google.android.material.snackbar.Snackbar
 
 fun Context.checkPermission(permission: String): Boolean {
@@ -21,4 +22,23 @@ fun View.showSnackBar(message: String, length: Int = Snackbar.LENGTH_LONG) {
 
 fun Fragment.showSnackBar(message: String, length: Int = Snackbar.LENGTH_LONG) {
     requireView().showSnackBar(message, length)
+}
+
+fun Fragment.setUpToolBar(
+    binding: ToolBarBinding,
+    iconResource: Int,
+    iconContentDescription: String,
+    title: String,
+    titleContentDescription: String
+) {
+    with(binding){
+        btnBackNavigation.setImageResource(iconResource)
+        btnBackNavigation.contentDescription = iconContentDescription
+        tvToolBarTitle.apply {
+            text = title
+            contentDescription = titleContentDescription
+            requestFocus()
+        }
+
+    }
 }

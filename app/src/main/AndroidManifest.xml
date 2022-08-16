@@ -53,6 +53,8 @@
         android:theme="@style/Theme.MobileCity">
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="userPortrait"
+            android:configChanges="orientation|keyboardHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
