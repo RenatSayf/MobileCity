@@ -1,4 +1,4 @@
-@file:Suppress("ObjectLiteralToLambda")
+@file:Suppress("ObjectLiteralToLambda", "MoveVariableDeclarationIntoWhen")
 
 package com.alfasreda.mobilecity.ui.main
 
@@ -7,26 +7,29 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
+import com.alfasreda.mobilecity.utils.Speech
+import com.alfasreda.mobilecity.utils.showSnackBar
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
 
 
 class MainFragment : Fragment() {
+
+    companion object {
+        const val ARG_SPEECH = "ARG_SPEECH"
+    }
 
     private lateinit var binding: MainFragmentBinding
 
@@ -47,10 +50,25 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        arguments?.let { bundle ->
+            val res = bundle.getInt(ARG_SPEECH)
+            when(res) {
+                Speech.INIT_ERROR -> {
+                    showSnackBar("Синтез речи не подерживается")
+                }
+                Speech.LANG_MISSING_DATA -> {
+                    showSnackBar("Не установлен языковой пакет. Перейдите в настройки и установите яз. пакет")
+                }
+                Speech.LANG_NOT_SUPPORTED -> {
+                    showSnackBar("Синтез речи для этого языка не поддерживается")
+                }
+            }
+        }
+
         lifecycleScope.launchWhenStarted {
             speechVM.state.collect { state ->
                 when(state) {
-                    SpeechViewModel.State.InitNotSuccess -> {
+                    SpeechViewModel.State.InitError -> {
 
                     }
                     SpeechViewModel.State.LangMissingData -> {
@@ -62,6 +80,7 @@ class MainFragment : Fragment() {
                     SpeechViewModel.State.InitSuccess -> {
 
                     }
+                    SpeechViewModel.State.NotActive -> {}
                 }
             }
         }
@@ -83,24 +102,19 @@ class MainFragment : Fragment() {
                 findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
             }
 
-            btnCityObjects.setOnClickListener {
+            btnCityObjects.setOnLongClickListener {
                 //mainVM.startAdvertising()
                 mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode)
+                true
             }
 
-            btnTransport.setOnClickListener {
+            btnTransport.setOnLongClickListener {
                 //mainVM.startAdvertising()
                 mainVM.startBtScan()
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
+                true
             }
-
-            btnCityObjects.setOnTouchListener(object : View.OnTouchListener {
-                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-
-                    return true
-                }
-            })
 
             lifecycleScope.launchWhenResumed {
 
@@ -184,6 +198,13 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        with(binding) {
+
+            btnCityObjects.setOnClickListener {
+                speechVM.speak(it.contentDescription.toString())
+            }
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
