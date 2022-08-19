@@ -11,7 +11,7 @@ import com.alfasreda.mobilecity.databinding.ItemBleObjectBinding
 import com.alfasreda.mobilecity.models.BtDevice
 
 
-class BtDeviceAdapter : RecyclerView.Adapter<ObjectViewHolder>() {
+class BtDeviceAdapter : RecyclerView.Adapter<BtDeviceAdapter.ObjectViewHolder>() {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BtDevice>() {
@@ -38,10 +38,23 @@ class BtDeviceAdapter : RecyclerView.Adapter<ObjectViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
-        (holder as ObjectViewHolder).bind(devices[position], position, devices.size)
+        holder.bind(devices[position], position, devices.size)
     }
 
     override fun getItemCount(): Int {
         return devices.size
+    }
+
+    inner class ObjectViewHolder(private val binding: ItemBleObjectBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(device: BtDevice, position: Int, count: Int) {
+
+            with(binding) {
+
+                tvObjectName.text = device.description
+                val itemCount = "${position + 1} / $count"
+                tvObjectsCount.text = itemCount
+            }
+        }
     }
 }

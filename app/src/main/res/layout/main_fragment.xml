@@ -9,18 +9,6 @@
     android:background="@color/gray"
     tools:context=".ui.main.MainFragment">
 
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/tool_bar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:title="Главная"-->
-<!--        app:titleTextColor="@color/white"-->
-<!--        app:navigationIcon="@drawable/ic_main_menu_white"-->
-<!--        android:contentDescription="Главная страница"-->
-<!--        app:navigationContentDescription="Переход в главное меню"-->
-<!--        android:background="@color/blue"-->
-<!--        />-->
-
     <include
         android:id="@+id/include_app_bar"
         layout="@layout/tool_bar" />
@@ -35,7 +23,7 @@
         android:paddingEnd="12dp"
         android:paddingBottom="12dp">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/rv_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -49,7 +37,7 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="horizontal">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </androidx.viewpager2.widget.ViewPager2>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_city_objects"
