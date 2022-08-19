@@ -4,12 +4,11 @@ package com.alfasreda.mobilecity.ui.main
 
 import android.annotation.SuppressLint
 import android.bluetooth.le.AdvertiseSettings
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.alfasreda.mobilecity.di.BtRepositoryModule
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.repositories.bt.BtRepository
+import com.alfasreda.mobilecity.utils.toCharList
 import com.alfasreda.mobilecity.utils.toHexList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +27,7 @@ class MainViewModel(
     }
 
     sealed class BtState {
+        object Undefined: BtState()
         object NotSupportBT: BtState()
         object BtIsOn: BtState()
         object BtIsOff: BtState()
@@ -37,16 +37,18 @@ class MainViewModel(
         data class ScanFailure(val errorCode: Int): BtState()
     }
 
-    private var _btState = MutableStateFlow<BtState>(BtState.BtIsOff)
-    val btState: StateFlow<BtState> = _btState
+    val btDevices = mutableSetOf<BtDevice>()
+
+    private var _btState = MutableLiveData<BtState>(BtState.Undefined)
+    val btState: LiveData<BtState> = _btState
     fun setBtState(btState: BtState) {
         _btState.value = btState
     }
 
     sealed class ScreenState {
         object NothingMode: ScreenState()
-        object CityMode: ScreenState()
-        object TransportMode: ScreenState()
+        data class CityMode(val devices: Set<BtDevice>): ScreenState()
+        data class TransportMode(val devices: Set<BtDevice>): ScreenState()
     }
 
     private var _screenState = MutableStateFlow<ScreenState>(ScreenState.NothingMode)
@@ -54,8 +56,6 @@ class MainViewModel(
     fun setScreenState(state: ScreenState) {
         _screenState.value = state
     }
-
-    private val btDevices = mutableSetOf<BtDevice>()
 
     @SuppressLint("MissingPermission")
     fun startAdvertising() {
@@ -66,9 +66,11 @@ class MainViewModel(
 
                 btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
                     override fun onLeScan(device: BtDevice) {
-                        btDevices.add(device)
-                        viewModelScope.launch {
-                            _btState.value = BtState.ScanSuccess(btDevices)
+                        if (!btDevices.contains(device)) {
+                            btDevices.add(device)
+                            viewModelScope.launch {
+                                _btState.value = BtState.ScanSuccess(btDevices)
+                            }
                         }
                     }
                 })
@@ -98,11 +100,15 @@ class MainViewModel(
 
         btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
             override fun onLeScan(device: BtDevice) {
-                val bytes = device.bytes
-                val hexList = bytes?.toHexList()
-                btDevices.add(device)
-                viewModelScope.launch {
-                    _btState.value = BtState.ScanSuccess(btDevices)
+
+                if (!btDevices.contains(device)) {
+                    val bytes = device.bytes
+                    val charList = bytes?.toCharList()
+                    val hexList = bytes?.toHexList()
+                    btDevices.add(device)
+                    viewModelScope.launch {
+                        _btState.value = BtState.ScanSuccess(btDevices)
+                    }
                 }
             }
         })

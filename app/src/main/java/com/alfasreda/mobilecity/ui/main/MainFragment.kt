@@ -14,11 +14,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
+import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceAdapter
 import com.alfasreda.mobilecity.utils.DoubleClickListener
 import com.alfasreda.mobilecity.utils.Speech
 import com.alfasreda.mobilecity.utils.setUpToolBar
@@ -26,6 +29,7 @@ import com.alfasreda.mobilecity.utils.showSnackBar
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
+import kotlinx.coroutines.launch
 
 
 class MainFragment : Fragment() {
@@ -41,6 +45,10 @@ class MainFragment : Fragment() {
     private val mainVM: MainViewModel by activityViewModels(factoryProducer = {
         MainViewModel.Factory()
     })
+
+    private val deviceAdapter: BtDeviceAdapter by lazy {
+        BtDeviceAdapter()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,56 +123,54 @@ class MainFragment : Fragment() {
 
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
-                mainVM.startBtScan()
-                mainVM.setScreenState(MainViewModel.ScreenState.CityMode)
+                //mainVM.startBtScan()
+                mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.btDevices))
             }
 
             btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
-                mainVM.startBtScan()
-                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
+                //mainVM.startBtScan()
+                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.btDevices))
             }
 
-            lifecycleScope.launchWhenResumed {
+            mainVM.btState.observe(viewLifecycleOwner) { state ->
 
-                mainVM.btState.collect { state ->
-                    mainVM.setBtState(state)
-                    when(state) {
-                        MainViewModel.BtState.BtIsOff -> {
-                            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                            startActivityForResult(enableBtIntent, 1111)
-                        }
-                        MainViewModel.BtState.BtIsOn -> {
+                when (state) {
+                    MainViewModel.BtState.BtIsOff -> {
+                        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                        startActivityForResult(enableBtIntent, 1111)
+                    }
+                    MainViewModel.BtState.BtIsOn -> {
 
-                        }
-                        MainViewModel.BtState.NotSupportBT -> {
-                            val message = "Устройство не поддерживает блютуз"
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                        }
-                        MainViewModel.BtState.NoScanPermission -> {
-                            val message = "Нет разрешения на блютуз сканирование"
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                        }
-                        is MainViewModel.BtState.ScanFailure -> {
-                            val message = "Ошибка блютуз сканирования. Код ${state.errorCode}"
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                        }
-                        is MainViewModel.BtState.ScanSuccess -> {
-                            val data = state.data
-                            data
-                        }
-                        is MainViewModel.BtState.NoPermission -> {
-                            permissionsBuilder(state.permission).build().send(){ result ->
-                                val granted = result.allGranted()
-                                if (granted) {
-                                    mainVM.startAdvertising()
-                                }
-                                else {
-                                    mainVM.stopBtScan()
-                                }
+                    }
+                    MainViewModel.BtState.NotSupportBT -> {
+                        val message = "Устройство не поддерживает блютуз"
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                    MainViewModel.BtState.NoScanPermission -> {
+                        val message = "Нет разрешения на блютуз сканирование"
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                    is MainViewModel.BtState.ScanFailure -> {
+                        val message = "Ошибка блютуз сканирования. Код ${state.errorCode}"
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                    }
+                    is MainViewModel.BtState.ScanSuccess -> {
+                        val data = state.data
+                        deviceAdapter.addItems(data)
+                        rvList.adapter = deviceAdapter
+                    }
+                    is MainViewModel.BtState.NoPermission -> {
+                        permissionsBuilder(state.permission).build().send() { result ->
+                            val granted = result.allGranted()
+                            if (granted) {
+                                mainVM.startAdvertising()
+                            } else {
+                                mainVM.stopBtScan()
                             }
                         }
                     }
+                    MainViewModel.BtState.Undefined -> {}
                 }
             }
 
@@ -175,7 +181,7 @@ class MainFragment : Fragment() {
                             btnCityObjects.style(R.style.AppButton)
                             btnTransport.style(R.style.AppButton)
                         }
-                        MainViewModel.ScreenState.CityMode -> {
+                        is MainViewModel.ScreenState.CityMode -> {
                             btnCityObjects.apply {
                                 isSelected = true
                                 style(R.style.AppButtonSelected)
@@ -184,8 +190,12 @@ class MainFragment : Fragment() {
                                 isSelected = false
                                 style(R.style.AppButton)
                             }
+                            mainVM.startBtScan()
+                            val data = mainVM.btDevices
+                            deviceAdapter.addItems(data)
+                            rvList.adapter = deviceAdapter
                         }
-                        MainViewModel.ScreenState.TransportMode -> {
+                        is MainViewModel.ScreenState.TransportMode -> {
                             btnCityObjects.apply {
                                 isSelected = false
                                 style(R.style.AppButton)
@@ -194,6 +204,10 @@ class MainFragment : Fragment() {
                                 isSelected = true
                                 style(R.style.AppButtonSelected)
                             }
+                            mainVM.startBtScan()
+                            val data = mainVM.btDevices
+                            deviceAdapter.addItems(data)
+                            rvList.adapter = deviceAdapter
                         }
                     }
                 }

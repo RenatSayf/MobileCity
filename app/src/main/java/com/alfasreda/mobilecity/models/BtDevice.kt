@@ -17,6 +17,9 @@ data class BtDevice(
         other as BtDevice
 
         if (device != other.device) return false
+        if (rssi != other.rssi) return false
+        if (!bytes.contentEquals(other.bytes)) return false
+        if (description != other.description) return false
         return true
     }
 

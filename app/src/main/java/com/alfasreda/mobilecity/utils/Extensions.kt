@@ -48,3 +48,20 @@ fun ByteArray.toHexList(): List<String> {
     }
     return list
 }
+
+fun ByteArray.toCharList(): List<Char> {
+    val list = this.map {
+        it.toInt().toChar()
+    }
+    return list
+}
+
+fun sign(input: Long): Long {
+    return if (input < 0x8000000) input else input or 0x7ffffff.inv()
+}
+
+fun ltob(input: Byte): Long {
+    var r = input.toLong()
+    if (r < 0) r += 256
+    return r
+}

@@ -115,10 +115,14 @@ class MockBtRepository : BtRepository() {
         BtDevice(
             rssi = -66,
             bytes = byteArray
-        ),
+        ).apply {
+                description = "Аптека Живика. Улица Челюскинцев, 19"
+        },
         BtDevice(
             rssi = -55,
             bytes = byteArray
-        )
+        ).apply {
+            description = "Остановка трамвая. Челюскинцев"
+        }
     )
 }
