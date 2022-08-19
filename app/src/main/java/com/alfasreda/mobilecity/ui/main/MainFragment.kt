@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.paris.extensions.style
+import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceAdapter
@@ -32,7 +33,7 @@ import com.fondesa.kpermissions.extension.send
 import kotlinx.coroutines.launch
 
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), BtDeviceAdapter.Listener {
 
     companion object {
         const val ARG_SPEECH = "ARG_SPEECH"
@@ -47,7 +48,7 @@ class MainFragment : Fragment() {
     })
 
     private val deviceAdapter: BtDeviceAdapter by lazy {
-        BtDeviceAdapter()
+        BtDeviceAdapter(this)
     }
 
     override fun onCreateView(
@@ -257,12 +258,21 @@ class MainFragment : Fragment() {
         requestCode
     }
 
+    override fun onAdapterPreviousBtnClick(position: Int) {
+        try {
+            binding.rvList.setCurrentItem(position - 1, true)
+        } catch (e: IndexOutOfBoundsException) {
+            if (BuildConfig.DEBUG) e.printStackTrace()
+        }
+    }
 
-
-
-
-
-
+    override fun onAdapterNextBtnClick(position: Int) {
+        try {
+            binding.rvList.setCurrentItem(position + 1, true)
+        } catch (e: IndexOutOfBoundsException) {
+            if (BuildConfig.DEBUG) e.printStackTrace()
+        }
+    }
 
 
 }

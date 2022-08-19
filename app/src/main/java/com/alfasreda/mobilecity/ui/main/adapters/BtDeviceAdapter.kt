@@ -11,7 +11,9 @@ import com.alfasreda.mobilecity.databinding.ItemBleObjectBinding
 import com.alfasreda.mobilecity.models.BtDevice
 
 
-class BtDeviceAdapter : RecyclerView.Adapter<BtDeviceAdapter.ObjectViewHolder>() {
+class BtDeviceAdapter(
+    private val listener: Listener
+) : ListAdapter<BtDevice, BtDeviceAdapter.ObjectViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BtDevice>() {
@@ -25,11 +27,12 @@ class BtDeviceAdapter : RecyclerView.Adapter<BtDeviceAdapter.ObjectViewHolder>()
         }
     }
 
+    private var recyclerView: RecyclerView? = null
+
     private var devices = mutableListOf<BtDevice>()
 
     fun addItems(list: Set<BtDevice>) {
         devices = list.toMutableList()
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectViewHolder {
@@ -54,7 +57,22 @@ class BtDeviceAdapter : RecyclerView.Adapter<BtDeviceAdapter.ObjectViewHolder>()
                 tvObjectName.text = device.description
                 val itemCount = "${position + 1} / $count"
                 tvObjectsCount.text = itemCount
+
+                btnPrevious.isEnabled = position > 0
+                btnNext.isEnabled = position < count - 1
+
+                btnPrevious.setOnClickListener {
+                    listener.onAdapterPreviousBtnClick(position)
+                }
+                btnNext.setOnClickListener {
+                    listener.onAdapterNextBtnClick(position)
+                }
             }
         }
+    }
+
+    interface Listener {
+        fun onAdapterPreviousBtnClick(position: Int)
+        fun onAdapterNextBtnClick(position: Int)
     }
 }
