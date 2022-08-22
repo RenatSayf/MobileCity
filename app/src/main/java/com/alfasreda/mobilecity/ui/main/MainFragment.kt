@@ -113,12 +113,14 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
+                speechVM.speak("Режим городские объекты")
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
             }
 
             btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
+                speechVM.speak("Режим транспорт")
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
             }
 
@@ -155,15 +157,27 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                                 val filteredData = data.filter {
                                     it.type == BtDevice.CITY_OBJECT
                                 }
-                                pageAdapter.addItems(filteredData)
-                                listAdapter.addItems(filteredData)
+                                when(screenState.mode) {
+                                    MainViewModel.DisplayMode.Page -> {
+                                        pageAdapter.addItems(filteredData)
+                                    }
+                                    MainViewModel.DisplayMode.List -> {
+                                        listAdapter.addItems(filteredData)
+                                    }
+                                }
                             }
                             is MainViewModel.ScreenState.TransportMode -> {
                                 val filteredData = data.filter {
                                     it.type == BtDevice.TRANSPORT
                                 }
-                                pageAdapter.addItems(filteredData)
-                                listAdapter.addItems(filteredData)
+                                when(screenState.mode) {
+                                    MainViewModel.DisplayMode.Page -> {
+                                        pageAdapter.addItems(filteredData)
+                                    }
+                                    MainViewModel.DisplayMode.List -> {
+                                        listAdapter.addItems(filteredData)
+                                    }
+                                }
                             }
                             else -> {}
                         }
@@ -328,6 +342,10 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
 
     override fun onAdapterItemBind(description: String) {
         speechVM.speak(description)
+    }
+
+    override fun onItemsAdded(count: Int) {
+        speechVM.speak("Видимых объектов $count")
     }
 
     override fun onListAdapterItemClick(device: BtDevice) {

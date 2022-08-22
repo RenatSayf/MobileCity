@@ -19,6 +19,10 @@ class BtDevicePageAdapter(
     private var devices = mutableListOf<BtDevice>()
 
     fun addItems(list: List<BtDevice>) {
+
+        if (devices != list) {
+            listener.onItemsAdded(list.size)
+        }
         devices = list.toMutableList()
         notifyDataSetChanged()
     }
@@ -82,5 +86,6 @@ class BtDevicePageAdapter(
         fun onAdapterNextBtnClick(position: Int)
         fun onAdapterItemLongClick(description: String)
         fun onAdapterItemBind(description: String)
+        fun onItemsAdded(count: Int)
     }
 }

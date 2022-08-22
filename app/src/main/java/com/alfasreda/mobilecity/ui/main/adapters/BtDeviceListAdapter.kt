@@ -12,6 +12,9 @@ class BtDeviceListAdapter(private val listener: Listener) : ListAdapter<BtDevice
     private var devices = mutableListOf<BtDevice>()
 
     fun addItems(list: List<BtDevice>) {
+        if (devices != list) {
+            listener.onItemsAdded(list.size)
+        }
         devices = list.toMutableList()
         notifyDataSetChanged()
     }
@@ -55,5 +58,6 @@ class BtDeviceListAdapter(private val listener: Listener) : ListAdapter<BtDevice
     interface Listener {
         fun onListAdapterItemClick(device: BtDevice)
         fun onAdapterItemLongClick(description: String)
+        fun onItemsAdded(count: Int)
     }
 }

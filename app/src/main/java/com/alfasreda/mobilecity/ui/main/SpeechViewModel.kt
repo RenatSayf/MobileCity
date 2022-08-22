@@ -54,7 +54,7 @@ class SpeechViewModel(private val app: Application) : AndroidViewModel(app), Tex
 
     fun speak(text: String, listener: UtteranceProgressListener? = null) {
         if (_state.value == State.InitSuccess) {
-            speech.speak(text, TextToSpeech.QUEUE_FLUSH, Bundle(), UTTERANCE_Id)
+            speech.speak(text, TextToSpeech.QUEUE_ADD, Bundle(), UTTERANCE_Id)
             if (listener != null) {
                 speech.setOnUtteranceProgressListener(listener)
             }
