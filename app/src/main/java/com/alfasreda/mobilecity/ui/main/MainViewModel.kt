@@ -41,18 +41,45 @@ class MainViewModel(
         _btState.value = btState
     }
 
+    enum class DisplayMode {
+        Page, List
+    }
     sealed class ScreenState {
         object NothingMode: ScreenState()
-        object ListMode: ScreenState()
-        object PageMode: ScreenState()
-        object CityMode: ScreenState()
-        object TransportMode: ScreenState()
+        data class CityMode(val mode: DisplayMode): ScreenState()
+        data class TransportMode(val mode: DisplayMode): ScreenState()
     }
 
-    private var _screenState = MutableLiveData<ScreenState>(ScreenState.PageMode)
+    private var _screenState = MutableLiveData<ScreenState>(ScreenState.CityMode(DisplayMode.Page))
     val screenState: LiveData<ScreenState> = _screenState
     fun setScreenState(state: ScreenState) {
         _screenState.value = state
+    }
+
+    fun setDisplayMode(mode: DisplayMode) {
+        when(_screenState.value) {
+            is ScreenState.CityMode -> {
+                _screenState.value = ScreenState.CityMode(mode)
+            }
+            is ScreenState.TransportMode -> {
+                _screenState.value = ScreenState.TransportMode(mode)
+            }
+            else -> {
+                _screenState.value = ScreenState.NothingMode
+            }
+        }
+    }
+
+    fun getDisplayMode(): DisplayMode {
+        return when (val value = _screenState.value) {
+            is ScreenState.CityMode -> {
+                value.mode
+            }
+            is ScreenState.TransportMode -> {
+                value.mode
+            }
+            else -> DisplayMode.Page
+        }
     }
 
     @SuppressLint("MissingPermission")

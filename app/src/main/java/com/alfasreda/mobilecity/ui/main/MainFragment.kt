@@ -100,23 +100,23 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
             }
 
             btnToList.setOnClickListener {
-
+                mainVM.setDisplayMode(MainViewModel.DisplayMode.List)
             }
 
             btnToPage.setOnClickListener {
-
+                mainVM.setDisplayMode(MainViewModel.DisplayMode.Page)
             }
 
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
-                mainVM.setScreenState(MainViewModel.ScreenState.CityMode)
+                mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
             }
 
             btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
-                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
+                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
             }
 
             mainVM.btState.observe(viewLifecycleOwner) { state ->
@@ -194,7 +194,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         btnCityObjects.style(R.style.AppButton)
                         btnTransport.style(R.style.AppButton)
                     }
-                    MainViewModel.ScreenState.CityMode -> {
+                    is MainViewModel.ScreenState.CityMode -> {
                         mainVM.startBtScan()
                         btnCityObjects.apply {
                             isSelected = true
@@ -204,9 +204,10 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                             isSelected = false
                             style(R.style.AppButton)
                         }
+                        displayDeviceList(state.mode)
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
-                    MainViewModel.ScreenState.TransportMode -> {
+                    is MainViewModel.ScreenState.TransportMode -> {
                         mainVM.startBtScan()
                         btnCityObjects.apply {
                             isSelected = false
@@ -216,28 +217,37 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                             isSelected = true
                             style(R.style.AppButtonSelected)
                         }
+                        displayDeviceList(state.mode)
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
-                    }
-                    MainViewModel.ScreenState.ListMode -> {
-                        btnToList.visibility = View.GONE
-                        btnToPage.visibility = View.VISIBLE
-                        rvList.apply {
-                            visibility = View.VISIBLE
-                        }
-                        vpList.visibility = View.GONE
-                    }
-                    MainViewModel.ScreenState.PageMode -> {
-                        btnToList.visibility = View.VISIBLE
-                        btnToPage.visibility = View.GONE
-                        vpList.apply {
-                            visibility = View.VISIBLE
-                        }
-                        rvList.visibility = View.GONE
                     }
                 }
             }
 
 
+        }
+    }
+
+    private fun displayDeviceList(mode: MainViewModel.DisplayMode) {
+        with(binding) {
+
+            when(mode) {
+                MainViewModel.DisplayMode.Page -> {
+                    btnToList.visibility = View.VISIBLE
+                    btnToPage.visibility = View.GONE
+                    vpList.apply {
+                        visibility = View.VISIBLE
+                    }
+                    rvList.visibility = View.GONE
+                }
+                MainViewModel.DisplayMode.List -> {
+                    btnToList.visibility = View.GONE
+                    btnToPage.visibility = View.VISIBLE
+                    rvList.apply {
+                        visibility = View.VISIBLE
+                    }
+                    vpList.visibility = View.GONE
+                }
+            }
         }
     }
 
