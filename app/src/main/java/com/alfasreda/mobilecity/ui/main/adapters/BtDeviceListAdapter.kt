@@ -40,10 +40,13 @@ class BtDeviceListAdapter(private val listener: Listener) : ListAdapter<BtDevice
             with(binding) {
 
                 tvObjectName.text = device.description
-
                 tvObjectName.setOnClickListener {
 
                     listener.onListAdapterItemClick(device)
+                }
+                tvObjectName.setOnLongClickListener {
+                    listener.onAdapterItemLongClick(device.description)
+                    true
                 }
             }
         }
@@ -51,5 +54,6 @@ class BtDeviceListAdapter(private val listener: Listener) : ListAdapter<BtDevice
 
     interface Listener {
         fun onListAdapterItemClick(device: BtDevice)
+        fun onAdapterItemLongClick(description: String)
     }
 }

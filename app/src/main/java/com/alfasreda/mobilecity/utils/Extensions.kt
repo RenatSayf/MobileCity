@@ -1,6 +1,7 @@
 package com.alfasreda.mobilecity.utils
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -65,3 +66,12 @@ fun ltob(input: Byte): Long {
     if (r < 0) r += 256
     return r
 }
+
+val Context.appPref: SharedPreferences
+    get() {
+        return this.getSharedPreferences("APP_PREF", Context.MODE_PRIVATE)
+    }
+val Fragment.appPref: SharedPreferences
+    get() {
+        return requireContext().appPref
+    }

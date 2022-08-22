@@ -5,6 +5,7 @@ package com.alfasreda.mobilecity.ui.main
 import android.app.Application
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,9 +52,12 @@ class SpeechViewModel(private val app: Application) : AndroidViewModel(app), Tex
         }
     }
 
-    fun speak(text: String) {
+    fun speak(text: String, listener: UtteranceProgressListener? = null) {
         if (_state.value == State.InitSuccess) {
             speech.speak(text, TextToSpeech.QUEUE_FLUSH, Bundle(), UTTERANCE_Id)
+            if (listener != null) {
+                speech.setOnUtteranceProgressListener(listener)
+            }
         }
     }
 }

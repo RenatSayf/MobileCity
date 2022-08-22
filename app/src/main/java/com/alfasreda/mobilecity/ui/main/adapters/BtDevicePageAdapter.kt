@@ -4,8 +4,10 @@ package com.alfasreda.mobilecity.ui.main.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemBleToPageBinding
 import com.alfasreda.mobilecity.models.BtDevice
 
@@ -39,6 +41,13 @@ class BtDevicePageAdapter(
         return devices.size
     }
 
+    override fun onViewAttachedToWindow(holder: PageViewHolder) {
+        super.onViewAttachedToWindow(holder)
+
+        val text = holder.itemView.findViewById<TextView>(R.id.tv_object_name).text
+        listener.onAdapterItemBind(text.toString())
+    }
+
     inner class PageViewHolder(
         private val binding: ItemBleToPageBinding
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -54,6 +63,10 @@ class BtDevicePageAdapter(
                 btnPrevious.isEnabled = position > 0
                 btnNext.isEnabled = position < count - 1
 
+                tvObjectName.setOnLongClickListener {
+                    listener.onAdapterItemLongClick(device.description)
+                    true
+                }
                 btnPrevious.setOnClickListener {
                     listener.onAdapterPreviousBtnClick(position)
                 }
@@ -67,5 +80,7 @@ class BtDevicePageAdapter(
     interface Listener {
         fun onAdapterPreviousBtnClick(position: Int)
         fun onAdapterNextBtnClick(position: Int)
+        fun onAdapterItemLongClick(description: String)
+        fun onAdapterItemBind(description: String)
     }
 }

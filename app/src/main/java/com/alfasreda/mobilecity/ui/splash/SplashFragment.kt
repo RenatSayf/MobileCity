@@ -1,6 +1,7 @@
 package com.alfasreda.mobilecity.ui.splash
 
 import android.os.Bundle
+import android.speech.tts.UtteranceProgressListener
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,9 @@ import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.ui.main.MainFragment
 import com.alfasreda.mobilecity.ui.main.SpeechViewModel
 import com.alfasreda.mobilecity.utils.Speech
+import com.alfasreda.mobilecity.utils.appPref
+
+const val KEY_FIRST_RUN = "KEY_FIRST_RUN"
 
 class SplashFragment : Fragment() {
 
@@ -40,7 +44,22 @@ class SplashFragment : Fragment() {
                         navigateToMainScreen(bundle)
                     }
                     SpeechViewModel.State.InitSuccess -> {
-                        navigateToMainScreen(null)
+                        val isFirstRun = appPref.getBoolean(KEY_FIRST_RUN, true)
+                        if (isFirstRun) {
+                            speechVM.speak(getString(R.string.introductory_phrase), listener = object : UtteranceProgressListener() {
+                                override fun onStart(utteranceId: String?) {
+                                }
+                                override fun onDone(utteranceId: String?) {
+                                    navigateToMainScreen(null)
+                                }
+                                override fun onError(utteranceId: String?) {
+                                    navigateToMainScreen(null)
+                                }
+                            })
+                        }
+                        else {
+                            navigateToMainScreen(null)
+                        }
                     }
                     SpeechViewModel.State.LangMissingData -> {
                         val bundle = Bundle().apply {

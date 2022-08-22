@@ -29,6 +29,7 @@ class MainViewModel(
         object BtIsOff: BtState()
         object NoScanPermission: BtState()
         data class NoPermission(val permission: String): BtState()
+        object StartScan: BtState()
         data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
         data class ScanFailure(val errorCode: Int): BtState()
     }
@@ -123,6 +124,7 @@ class MainViewModel(
     @SuppressLint("MissingPermission")
     fun startBtScan() {
 
+        _btState.value = BtState.StartScan
         btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
             override fun onLeScan(device: BtDevice) {
 

@@ -22,7 +22,9 @@ import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceListAdapter
 import com.alfasreda.mobilecity.ui.main.adapters.BtDevicePageAdapter
+import com.alfasreda.mobilecity.ui.splash.KEY_FIRST_RUN
 import com.alfasreda.mobilecity.utils.Speech
+import com.alfasreda.mobilecity.utils.appPref
 import com.alfasreda.mobilecity.utils.setUpToolBar
 import com.alfasreda.mobilecity.utils.showSnackBar
 import com.fondesa.kpermissions.allGranted
@@ -63,6 +65,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        appPref.edit().putBoolean(KEY_FIRST_RUN, false).apply()
         arguments?.let { bundle ->
             val res = bundle.getInt(ARG_SPEECH)
             when(res) {
@@ -139,10 +142,12 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     }
                     is MainViewModel.BtState.ScanFailure -> {
+                        progressBar.visibility = View.GONE
                         val message = "Ошибка блютуз сканирования. Код ${state.errorCode}"
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     }
                     is MainViewModel.BtState.ScanSuccess -> {
+                        progressBar.visibility = View.GONE
                         val data = state.data.toList()
                         val screenState = mainVM.screenState.value
                         when(screenState) {
@@ -184,6 +189,9 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                                 result
                             }
                         }
+                    }
+                    MainViewModel.BtState.StartScan -> {
+                        progressBar.visibility = View.VISIBLE
                     }
                 }
             }
@@ -256,6 +264,15 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
 
         with(binding) {
 
+            toolBarContainer.forEach { view ->
+                view.setOnLongClickListener {
+                    val description = it.contentDescription
+                    if (!description.isNullOrEmpty()) {
+                        speechVM.speak(description.toString())
+                    }
+                    true
+                }
+            }
             includeAppBar.root.forEach { view ->
                 view.setOnLongClickListener {
                     val description = it.contentDescription
@@ -303,6 +320,14 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
         } catch (e: IndexOutOfBoundsException) {
             if (BuildConfig.DEBUG) e.printStackTrace()
         }
+    }
+
+    override fun onAdapterItemLongClick(description: String) {
+        speechVM.speak(description)
+    }
+
+    override fun onAdapterItemBind(description: String) {
+        speechVM.speak(description)
     }
 
     override fun onListAdapterItemClick(device: BtDevice) {
