@@ -8,10 +8,6 @@ import androidx.lifecycle.*
 import com.alfasreda.mobilecity.di.BtRepositoryModule
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.repositories.bt.BtRepository
-import com.alfasreda.mobilecity.utils.toCharList
-import com.alfasreda.mobilecity.utils.toHexList
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -47,12 +43,14 @@ class MainViewModel(
 
     sealed class ScreenState {
         object NothingMode: ScreenState()
-        data class CityMode(val devices: Set<BtDevice>): ScreenState()
-        data class TransportMode(val devices: Set<BtDevice>): ScreenState()
+        object ListMode: ScreenState()
+        object PageMode: ScreenState()
+        object CityMode: ScreenState()
+        object TransportMode: ScreenState()
     }
 
-    private var _screenState = MutableStateFlow<ScreenState>(ScreenState.NothingMode)
-    val screenState: StateFlow<ScreenState> = _screenState
+    private var _screenState = MutableLiveData<ScreenState>(ScreenState.PageMode)
+    val screenState: LiveData<ScreenState> = _screenState
     fun setScreenState(state: ScreenState) {
         _screenState.value = state
     }
@@ -102,9 +100,6 @@ class MainViewModel(
             override fun onLeScan(device: BtDevice) {
 
                 if (!btDevices.contains(device)) {
-                    val bytes = device.bytes
-                    val charList = bytes?.toCharList()
-                    val hexList = bytes?.toHexList()
                     btDevices.add(device)
                     viewModelScope.launch {
                         _btState.value = BtState.ScanSuccess(btDevices)
@@ -115,7 +110,7 @@ class MainViewModel(
     }
 
     fun initBluetooth() {
-        //val adapter = btRepository.bluetoothAdapter
+
         if (!btRepository.isSupportBluetooth) {
             viewModelScope.launch {
                 _btState.value = BtState.NotSupportBT

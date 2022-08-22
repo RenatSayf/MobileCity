@@ -3,6 +3,9 @@
 package com.alfasreda.mobilecity.repositories.bt
 
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.models.busBytes
+import com.alfasreda.mobilecity.models.pharmacyBytes
+import com.alfasreda.mobilecity.models.tramBytes
 import kotlinx.coroutines.*
 
 class MockBtRepository : BtRepository() {
@@ -44,85 +47,30 @@ class MockBtRepository : BtRepository() {
         isScan = false
     }
 
-    private val byteArray = arrayOf(
-        2,
-        1,
-        6,
-        11,
-        9,
-        73,
-        68,
-        48,
-        48,
-        48,
-        48,
-        48,
-        48,
-        48,
-        52,
-        10,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        5,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-    ).map {
-        it.toByte()
-    }.toByteArray()
-
     private val devices = listOf<BtDevice>(
         BtDevice(
             rssi = -66,
-            bytes = byteArray
+            bytes = pharmacyBytes
         ).apply {
                 description = "Аптека Живика. Улица Челюскинцев, 19"
         },
         BtDevice(
             rssi = -55,
-            bytes = byteArray
+            bytes = pharmacyBytes
         ).apply {
-            description = "Остановка трамвая. Челюскинцев"
+            description = "Остановка трамвая. Ж/д вокзал"
+        },
+        BtDevice(
+            rssi = -59,
+            bytes = busBytes
+        ).apply {
+            description = "Автобус №56"
+        },
+        BtDevice(
+            rssi = -51,
+            bytes = tramBytes
+        ).apply {
+            description = "Трамвай №3"
         }
     )
 }

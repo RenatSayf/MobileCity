@@ -26,13 +26,13 @@ fun Fragment.showSnackBar(message: String, length: Int = Snackbar.LENGTH_LONG) {
 
 fun Fragment.setUpToolBar(
     binding: ToolBarBinding,
-    iconResource: Int,
+    navIconResource: Int,
     iconContentDescription: String,
     title: String,
     titleContentDescription: String
 ) {
     with(binding){
-        btnBackNavigation.setImageResource(iconResource)
+        btnBackNavigation.setImageResource(navIconResource)
         btnBackNavigation.contentDescription = iconContentDescription
         tvToolBarTitle.apply {
             text = title

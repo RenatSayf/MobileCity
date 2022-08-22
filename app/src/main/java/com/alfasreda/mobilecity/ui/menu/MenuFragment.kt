@@ -35,7 +35,7 @@ class MenuFragment : Fragment() {
 
             setUpToolBar(
                 binding = includeAppBar,
-                iconResource = R.drawable.ic_arrow_back_white,
+                navIconResource = R.drawable.ic_arrow_back_white,
                 iconContentDescription = "Назад на главный экран",
                 title = "Меню",
                 titleContentDescription = "Это главное меню приложения"

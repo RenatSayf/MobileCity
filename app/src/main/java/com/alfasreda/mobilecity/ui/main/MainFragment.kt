@@ -14,26 +14,23 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
-import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceAdapter
-import com.alfasreda.mobilecity.utils.DoubleClickListener
+import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceListAdapter
+import com.alfasreda.mobilecity.ui.main.adapters.BtDevicePageAdapter
 import com.alfasreda.mobilecity.utils.Speech
 import com.alfasreda.mobilecity.utils.setUpToolBar
 import com.alfasreda.mobilecity.utils.showSnackBar
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
-import kotlinx.coroutines.launch
 
 
-class MainFragment : Fragment(), BtDeviceAdapter.Listener {
+class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapter.Listener {
 
     companion object {
         const val ARG_SPEECH = "ARG_SPEECH"
@@ -47,8 +44,12 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
         MainViewModel.Factory()
     })
 
-    private val deviceAdapter: BtDeviceAdapter by lazy {
-        BtDeviceAdapter(this)
+    private val pageAdapter: BtDevicePageAdapter by lazy {
+        BtDevicePageAdapter(this)
+    }
+
+    private val listAdapter: BtDeviceListAdapter by lazy {
+        BtDeviceListAdapter(this)
     }
 
     override fun onCreateView(
@@ -77,61 +78,45 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            speechVM.state.collect { state ->
-                when(state) {
-                    SpeechViewModel.State.InitError -> {
-
-                    }
-                    SpeechViewModel.State.LangMissingData -> {
-
-                    }
-                    SpeechViewModel.State.LangNotSupported -> {
-
-                    }
-                    SpeechViewModel.State.InitSuccess -> {
-
-                    }
-                    SpeechViewModel.State.NotActive -> {}
-                }
-            }
-        }
-
-        if (savedInstanceState == null) {
-            permissionsBuilder(Manifest.permission.ACCESS_FINE_LOCATION).build().send(){ result ->
-                if (result.allGranted()) {
-                    mainVM.initBluetooth()
-                }
-                else {
-                    result
-                }
-            }
-        }
-
         with(binding) {
 
             setUpToolBar(
                 binding = includeAppBar,
-                iconResource = R.drawable.ic_main_menu_white,
+                navIconResource = R.drawable.ic_hamburger_white,
                 iconContentDescription = "Перейти в главное меню",
                 title = "Главная",
                 titleContentDescription = "Это главный экран приложения"
                 )
 
+            rvList.apply {
+                adapter = listAdapter
+            }
+            vpList.apply {
+                adapter = pageAdapter
+            }
+
             includeAppBar.btnBackNavigation.setOnClickListener {
                 findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
+            }
+
+            btnToList.setOnClickListener {
+
+            }
+
+            btnToPage.setOnClickListener {
+
             }
 
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
-                mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.btDevices))
+                mainVM.setScreenState(MainViewModel.ScreenState.CityMode)
             }
 
             btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
-                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.btDevices))
+                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode)
             }
 
             mainVM.btState.observe(viewLifecycleOwner) { state ->
@@ -142,7 +127,8 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
                         startActivityForResult(enableBtIntent, 1111)
                     }
                     MainViewModel.BtState.BtIsOn -> {
-
+                        binding.btnCityObjects.isEnabled = true
+                        binding.btnTransport.isEnabled = true
                     }
                     MainViewModel.BtState.NotSupportBT -> {
                         val message = "Устройство не поддерживает блютуз"
@@ -157,9 +143,25 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     }
                     is MainViewModel.BtState.ScanSuccess -> {
-                        val data = state.data
-                        deviceAdapter.addItems(data)
-                        rvList.adapter = deviceAdapter
+                        val data = state.data.toList()
+                        val screenState = mainVM.screenState.value
+                        when(screenState) {
+                            is MainViewModel.ScreenState.CityMode -> {
+                                val filteredData = data.filter {
+                                    it.type == BtDevice.CITY_OBJECT
+                                }
+                                pageAdapter.addItems(filteredData)
+                                listAdapter.addItems(filteredData)
+                            }
+                            is MainViewModel.ScreenState.TransportMode -> {
+                                val filteredData = data.filter {
+                                    it.type == BtDevice.TRANSPORT
+                                }
+                                pageAdapter.addItems(filteredData)
+                                listAdapter.addItems(filteredData)
+                            }
+                            else -> {}
+                        }
                     }
                     is MainViewModel.BtState.NoPermission -> {
                         permissionsBuilder(state.permission).build().send() { result ->
@@ -171,53 +173,72 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
                             }
                         }
                     }
-                    MainViewModel.BtState.Undefined -> {}
-                }
-            }
-
-            lifecycleScope.launchWhenResumed {
-                mainVM.screenState.collect { state ->
-                    when(state) {
-                        MainViewModel.ScreenState.NothingMode -> {
-                            btnCityObjects.style(R.style.AppButton)
-                            btnTransport.style(R.style.AppButton)
-                        }
-                        is MainViewModel.ScreenState.CityMode -> {
-                            btnCityObjects.apply {
-                                isSelected = true
-                                style(R.style.AppButtonSelected)
+                    MainViewModel.BtState.Undefined -> {
+                        binding.btnCityObjects.isEnabled = false
+                        binding.btnTransport.isEnabled = false
+                        permissionsBuilder(Manifest.permission.ACCESS_FINE_LOCATION).build().send(){ result ->
+                            if (result.allGranted()) {
+                                mainVM.initBluetooth()
                             }
-                            btnTransport.apply {
-                                isSelected = false
-                                style(R.style.AppButton)
+                            else {
+                                result
                             }
-                            mainVM.startBtScan()
-                            val data = mainVM.btDevices
-                            deviceAdapter.addItems(data)
-                            rvList.adapter = deviceAdapter
-                        }
-                        is MainViewModel.ScreenState.TransportMode -> {
-                            btnCityObjects.apply {
-                                isSelected = false
-                                style(R.style.AppButton)
-                            }
-                            btnTransport.apply {
-                                isSelected = true
-                                style(R.style.AppButtonSelected)
-                            }
-                            mainVM.startBtScan()
-                            val data = mainVM.btDevices
-                            deviceAdapter.addItems(data)
-                            rvList.adapter = deviceAdapter
                         }
                     }
                 }
             }
 
+            mainVM.screenState.observe(viewLifecycleOwner) { state ->
+                when(state) {
+                    MainViewModel.ScreenState.NothingMode -> {
+                        btnCityObjects.style(R.style.AppButton)
+                        btnTransport.style(R.style.AppButton)
+                    }
+                    MainViewModel.ScreenState.CityMode -> {
+                        mainVM.startBtScan()
+                        btnCityObjects.apply {
+                            isSelected = true
+                            style(R.style.AppButtonSelected)
+                        }
+                        btnTransport.apply {
+                            isSelected = false
+                            style(R.style.AppButton)
+                        }
+                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
+                    }
+                    MainViewModel.ScreenState.TransportMode -> {
+                        mainVM.startBtScan()
+                        btnCityObjects.apply {
+                            isSelected = false
+                            style(R.style.AppButton)
+                        }
+                        btnTransport.apply {
+                            isSelected = true
+                            style(R.style.AppButtonSelected)
+                        }
+                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
+                    }
+                    MainViewModel.ScreenState.ListMode -> {
+                        btnToList.visibility = View.GONE
+                        btnToPage.visibility = View.VISIBLE
+                        rvList.apply {
+                            visibility = View.VISIBLE
+                        }
+                        vpList.visibility = View.GONE
+                    }
+                    MainViewModel.ScreenState.PageMode -> {
+                        btnToList.visibility = View.VISIBLE
+                        btnToPage.visibility = View.GONE
+                        vpList.apply {
+                            visibility = View.VISIBLE
+                        }
+                        rvList.visibility = View.GONE
+                    }
+                }
+            }
+
+
         }
-
-
-
     }
 
     override fun onResume() {
@@ -260,7 +281,7 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
 
     override fun onAdapterPreviousBtnClick(position: Int) {
         try {
-            binding.rvList.setCurrentItem(position - 1, true)
+            binding.vpList.setCurrentItem(position - 1, true)
         } catch (e: IndexOutOfBoundsException) {
             if (BuildConfig.DEBUG) e.printStackTrace()
         }
@@ -268,10 +289,14 @@ class MainFragment : Fragment(), BtDeviceAdapter.Listener {
 
     override fun onAdapterNextBtnClick(position: Int) {
         try {
-            binding.rvList.setCurrentItem(position + 1, true)
+            binding.vpList.setCurrentItem(position + 1, true)
         } catch (e: IndexOutOfBoundsException) {
             if (BuildConfig.DEBUG) e.printStackTrace()
         }
+    }
+
+    override fun onListAdapterItemClick(device: BtDevice) {
+
     }
 
 

@@ -4,43 +4,34 @@ package com.alfasreda.mobilecity.ui.main.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.alfasreda.mobilecity.databinding.ItemBleObjectBinding
+import com.alfasreda.mobilecity.databinding.ItemBleToPageBinding
 import com.alfasreda.mobilecity.models.BtDevice
 
 
-class BtDeviceAdapter(
+class BtDevicePageAdapter(
     private val listener: Listener
-) : ListAdapter<BtDevice, BtDeviceAdapter.ObjectViewHolder>(DIFF_CALLBACK) {
-
-    companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BtDevice>() {
-            override fun areItemsTheSame(oldItem: BtDevice, newItem: BtDevice): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: BtDevice, newItem: BtDevice): Boolean {
-                return oldItem == newItem
-            }
-        }
-    }
-
-    private var recyclerView: RecyclerView? = null
+) : ListAdapter<BtDevice, BtDevicePageAdapter.PageViewHolder>(DIFF_CALLBACK) {
 
     private var devices = mutableListOf<BtDevice>()
 
-    fun addItems(list: Set<BtDevice>) {
+    fun addItems(list: List<BtDevice>) {
         devices = list.toMutableList()
+        notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectViewHolder {
-        val binding = ItemBleObjectBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ObjectViewHolder(binding)
+    fun clear() {
+        devices.clear()
+        notifyDataSetChanged()
     }
 
-    override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
+        val binding = ItemBleToPageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PageViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
         holder.bind(devices[position], position, devices.size)
     }
 
@@ -48,7 +39,9 @@ class BtDeviceAdapter(
         return devices.size
     }
 
-    inner class ObjectViewHolder(private val binding: ItemBleObjectBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class PageViewHolder(
+        private val binding: ItemBleToPageBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(device: BtDevice, position: Int, count: Int) {
 
