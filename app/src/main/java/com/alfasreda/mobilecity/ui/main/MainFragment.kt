@@ -344,12 +344,12 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
         speechVM.speak(description)
     }
 
-    override fun onItemsAdded(count: Int) {
+    override fun onAdapterItemsAdded(count: Int) {
         speechVM.speak("Видимых объектов $count")
     }
 
     override fun onListAdapterItemClick(device: BtDevice) {
-
+        speechVM.speak(device.description)
     }
 
 

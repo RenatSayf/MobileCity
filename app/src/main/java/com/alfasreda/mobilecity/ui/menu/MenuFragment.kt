@@ -10,8 +10,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.FragmentMenuBinding
+import com.alfasreda.mobilecity.ui.dialogs.AboutDialog
 import com.alfasreda.mobilecity.ui.main.SpeechViewModel
 import com.alfasreda.mobilecity.utils.setUpToolBar
+import com.alfasreda.mobilecity.utils.showSnackBar
 
 @Suppress("ObjectLiteralToLambda")
 class MenuFragment : Fragment() {
@@ -47,6 +49,18 @@ class MenuFragment : Fragment() {
 
             btnBack.setOnClickListener {
                 findNavController().popBackStack()
+            }
+
+            btnSettings.setOnClickListener {
+                showSnackBar("Раздел находится в разработке")
+            }
+
+            btnFilter.setOnClickListener {
+                showSnackBar("Раздел находится в разработке")
+            }
+
+            btnAbout.setOnClickListener {
+                AboutDialog().show(requireActivity().supportFragmentManager, AboutDialog.TAG)
             }
 
             btnExit.setOnClickListener {

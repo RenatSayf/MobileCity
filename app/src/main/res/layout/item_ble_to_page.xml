@@ -70,7 +70,8 @@
             android:layout_marginEnd="26dp"
             android:padding="16dp"
             android:contentDescription="Предыдущий объект"
-            app:drawableBottomCompat="@drawable/ic_chevron_left_black" />
+            app:drawableBottomCompat="@drawable/ic_chevron_left_black"
+            android:background="@drawable/bg_ripple_for_previous_btn"/>
 
         <TextView
             android:id="@+id/btn_next"
@@ -83,7 +84,8 @@
             android:layout_marginStart="26dp"
             android:padding="16dp"
             android:contentDescription="Следующий объект"
-            app:drawableBottomCompat="@drawable/ic_chevron_right_black" />
+            app:drawableBottomCompat="@drawable/ic_chevron_right_black"
+            android:background="@drawable/bg_ripple_for_next_btn"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
