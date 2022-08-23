@@ -88,6 +88,20 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                tools:text="Для работы приложения требуется доступ к данным о местоположении устройства."
+                android:contentDescription="Нажмите что бы дать разрешение о местоположении устройства."
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                tools:visibility="visible"
+                android:visibility="gone"
+                />
+
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="90dp"

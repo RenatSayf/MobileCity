@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Мобильный город</string>
     <string name="introductory_phrase">Мобильный город. Система ориентирования и информирования от компании Альфа-Среда</string>
+    <string name="no_visible_objects">Нет видимых объектов</string>
 </resources>

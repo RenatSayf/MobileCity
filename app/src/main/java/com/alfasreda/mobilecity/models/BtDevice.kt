@@ -3,6 +3,7 @@
 package com.alfasreda.mobilecity.models
 
 import android.bluetooth.BluetoothDevice
+import java.util.*
 
 data class BtDevice(
     val device: BluetoothDevice? = null,
@@ -19,6 +20,11 @@ data class BtDevice(
 
     var description: String = ""
 
+    private val macAddress: String
+        get() {
+            return if (device != null) device.address else UUID.randomUUID().toString()
+        }
+
     val type: String
         get() {
             val value = bytes?.get(7)?.toInt()?.toChar() ?: ""
@@ -33,19 +39,11 @@ data class BtDevice(
         }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
         other as BtDevice
-
-        if (device != other.device) return false
-        if (rssi != other.rssi) return false
-        if (!bytes.contentEquals(other.bytes)) return false
-        if (description != other.description) return false
-        return true
+        return macAddress == other.macAddress
     }
 
     override fun hashCode(): Int {
-        return device.hashCode()
+        return device?.address.hashCode()
     }
 }

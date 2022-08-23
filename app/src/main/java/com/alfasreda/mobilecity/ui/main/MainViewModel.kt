@@ -23,12 +23,13 @@ class MainViewModel(
     }
 
     sealed class BtState {
-        object Undefined: BtState()
+        object NoLocationPermission: BtState()
         object NotSupportBT: BtState()
         object BtIsOn: BtState()
         object BtIsOff: BtState()
-        object NoScanPermission: BtState()
+        object NoBtPermission: BtState()
         data class NoPermission(val permission: String): BtState()
+        data class PermissionDenied(val permission: String): BtState()
         object StartScan: BtState()
         data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
         data class ScanFailure(val errorCode: Int): BtState()
@@ -36,7 +37,7 @@ class MainViewModel(
 
     val btDevices = mutableSetOf<BtDevice>()
 
-    private var _btState = MutableLiveData<BtState>(BtState.Undefined)
+    private var _btState = MutableLiveData<BtState>(BtState.NoLocationPermission)
     val btState: LiveData<BtState> = _btState
     fun setBtState(btState: BtState) {
         _btState.value = btState
@@ -46,12 +47,13 @@ class MainViewModel(
         Page, List
     }
     sealed class ScreenState {
+        object Init: ScreenState()
         object NothingMode: ScreenState()
         data class CityMode(val mode: DisplayMode): ScreenState()
         data class TransportMode(val mode: DisplayMode): ScreenState()
     }
 
-    private var _screenState = MutableLiveData<ScreenState>(ScreenState.CityMode(DisplayMode.Page))
+    private var _screenState = MutableLiveData<ScreenState>(ScreenState.Init)
     val screenState: LiveData<ScreenState> = _screenState
     fun setScreenState(state: ScreenState) {
         _screenState.value = state
@@ -116,7 +118,7 @@ class MainViewModel(
 
         btRepository.stopLowEnergyScan(object : BtRepository.IBtScanListener {
             override fun onLeScan(device: BtDevice) {
-
+                device
             }
         })
     }
