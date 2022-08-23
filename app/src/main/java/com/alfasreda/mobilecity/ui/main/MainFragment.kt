@@ -260,7 +260,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                     MainViewModel.ScreenState.NothingMode -> {
                         btnCityObjects.style(R.style.AppButton)
                         btnTransport.style(R.style.AppButton)
-                        val message = "Выберите режим обнаружения статических объектов или транспорта"
+                        val message = "Выберите режим обнаружения статических объектов или транспорта, нажав на соответствующие кнопки внизу экрана"
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
                         speechVM.speak(message)
                     }
