@@ -3,7 +3,7 @@
 package com.alfasreda.mobilecity.models
 
 import android.bluetooth.BluetoothDevice
-import java.util.*
+import kotlin.math.abs
 
 data class BtDevice(
     val device: BluetoothDevice? = null,
@@ -22,7 +22,7 @@ data class BtDevice(
 
     private val macAddress: String
         get() {
-            return if (device != null) device.address else UUID.randomUUID().toString()
+            return if (device != null) device.address else "00:00:00:${abs(rssi)}"
         }
 
     val type: String
