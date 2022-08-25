@@ -28,7 +28,7 @@ class MainViewModel(
         object BtIsOn: BtState()
         object BtIsOff: BtState()
         object NoBtPermission: BtState()
-        data class NoPermission(val permission: String): BtState()
+        //data class NoPermission(val permission: String): BtState()
         data class PermissionDenied(val permission: String): BtState()
         object StartScan: BtState()
         data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
@@ -86,20 +86,22 @@ class MainViewModel(
     }
 
     @SuppressLint("MissingPermission")
-    fun startAdvertising() {
+    fun startAdvertising(deviceId: String) {
 
-        btRepository.startAdvertising(object : BtRepository.IBtAdvertisingListener {
+        btRepository.startAdvertising(deviceId, object : BtRepository.IBtAdvertisingListener {
 
             override fun onAdvertisingSuccess(settingsInEffect: AdvertiseSettings?) {
 
                 btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
                     override fun onLeScan(device: BtDevice) {
-                        if (!btDevices.contains(device)) {
-                            btDevices.add(device)
-                            viewModelScope.launch {
-                                _btState.value = BtState.ScanSuccess(btDevices)
-                            }
-                        }
+//                        if (!btDevices.contains(device)) {
+//                            btDevices.add(device)
+//                            viewModelScope.launch {
+//                                _btState.value = BtState.ScanSuccess(btDevices)
+//                            }
+//                        }
+                        device
+                        btRepository.stopLowEnergyScan(null)
                     }
                 })
             }

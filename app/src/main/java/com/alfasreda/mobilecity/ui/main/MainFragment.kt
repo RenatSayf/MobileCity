@@ -211,16 +211,16 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                             else -> {}
                         }
                     }
-                    is MainViewModel.BtState.NoPermission -> {
-                        permissionsBuilder(state.permission).build().send() { result ->
-                            val granted = result.allGranted()
-                            if (granted) {
-                                mainVM.startAdvertising()
-                            } else {
-                                mainVM.stopBtScan()
-                            }
-                        }
-                    }
+//                    is MainViewModel.BtState.NoPermission -> {
+//                        permissionsBuilder(state.permission).build().send() { result ->
+//                            val granted = result.allGranted()
+//                            if (granted) {
+//                                mainVM.startAdvertising()
+//                            } else {
+//                                mainVM.stopBtScan()
+//                            }
+//                        }
+//                    }
                     MainViewModel.BtState.NoLocationPermission -> {
                         binding.btnCityObjects.isEnabled = false
                         binding.btnTransport.isEnabled = false
@@ -265,7 +265,6 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         speechVM.speak(message)
                     }
                     is MainViewModel.ScreenState.CityMode -> {
-                        mainVM.startAdvertising()
                         mainVM.startBtScan()
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
                         btnCityObjects.apply {
@@ -280,7 +279,6 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
                     is MainViewModel.ScreenState.TransportMode -> {
-                        mainVM.startAdvertising()
                         mainVM.startBtScan()
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
                         btnCityObjects.apply {
@@ -416,6 +414,11 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
         } catch (e: IndexOutOfBoundsException) {
             if (BuildConfig.DEBUG) e.printStackTrace()
         }
+    }
+
+    override fun onAdapterItemOnClick(device: BtDevice) {
+        val id = device.id
+        mainVM.startAdvertising(id)
     }
 
     override fun onAdapterItemLongClick(description: String) {

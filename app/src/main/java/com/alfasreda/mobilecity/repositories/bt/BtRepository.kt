@@ -9,6 +9,8 @@ import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.utils.toUtf8ByteArray
+import org.bouncycastle.util.Integers
 
 open class BtRepository {
 
@@ -32,13 +34,13 @@ open class BtRepository {
         .setConnectable(false)
         .build()
 
-    private val sid = ("ID00000004").substring(2)
-    private val namesSnd = sid.toByte()
-
-    private val advData = AdvertiseData.Builder().addManufacturerData(0x4449, byteArrayOf(namesSnd)).build()
-
     @SuppressLint("MissingPermission")
-    open fun startAdvertising(listener: IBtAdvertisingListener) {
+    open fun startAdvertising(deviceId: String, listener: IBtAdvertisingListener) {
+
+        val sid = (deviceId).substring(2)
+        val bytes = sid.toUtf8ByteArray()
+        val advData = AdvertiseData.Builder().addManufacturerData(0x4449, bytes).build()
+
         bltAdvertiser?.startAdvertising(advSettings, advData, object : AdvertiseCallback() {
 
             override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
@@ -50,6 +52,8 @@ open class BtRepository {
                 listener.onAdvertisingError(errorCode)
             }
         })
+        val s = 5.toString(2)
+        s
     }
 
     @SuppressLint("MissingPermission")

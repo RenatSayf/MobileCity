@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.alfasreda.mobilecity.databinding.ToolBarBinding
 import com.google.android.material.snackbar.Snackbar
+import java.nio.charset.Charset
 
 fun Context.checkPermission(permission: String): Boolean {
     return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
@@ -55,6 +56,10 @@ fun ByteArray.toCharList(): List<Char> {
         it.toInt().toChar()
     }
     return list
+}
+
+fun String.toUtf8ByteArray(): ByteArray {
+    return this.toByteArray(Charsets.UTF_8)
 }
 
 fun sign(input: Long): Long {

@@ -20,6 +20,18 @@ data class BtDevice(
 
     var description: String = ""
 
+    val id: String
+        get() {
+            return if (bytes != null) {
+                try {
+                    bytes.decodeToString(5, 15, true)
+                } catch (e: Exception) {
+                    "ID000000${abs(rssi)}"
+                }
+            }
+            else "ID000000${abs(rssi)}"
+        }
+
     private val macAddress: String
         get() {
             return if (device != null) device.address else "00:00:00:${abs(rssi)}"

@@ -67,6 +67,10 @@ class BtDevicePageAdapter(
                 btnPrevious.isEnabled = position > 0
                 btnNext.isEnabled = position < count - 1
 
+                tvObjectName.setOnClickListener {
+                    listener.onAdapterItemOnClick(device)
+                }
+
                 tvObjectName.setOnLongClickListener {
                     listener.onAdapterItemLongClick(device.description)
                     true
@@ -84,6 +88,7 @@ class BtDevicePageAdapter(
     interface Listener {
         fun onAdapterPreviousBtnClick(position: Int)
         fun onAdapterNextBtnClick(position: Int)
+        fun onAdapterItemOnClick(device: BtDevice)
         fun onAdapterItemLongClick(description: String)
         fun onAdapterItemBind(description: String)
         fun onAdapterItemsAdded(count: Int)

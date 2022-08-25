@@ -21,8 +21,8 @@ class MockBtRepository : BtRepository() {
 
     private var isScan = false
 
-    override fun startAdvertising(listener: IBtAdvertisingListener) {
-        super.startAdvertising(listener)
+    override fun startAdvertising(deviceId: String, listener: IBtAdvertisingListener) {
+        super.startAdvertising(deviceId, listener)
     }
 
     override fun startLowEnergyScan(listener: IBtScanListener) {
