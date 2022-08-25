@@ -94,14 +94,11 @@ class MainViewModel(
 
                 btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
                     override fun onLeScan(device: BtDevice) {
-//                        if (!btDevices.contains(device)) {
-//                            btDevices.add(device)
-//                            viewModelScope.launch {
-//                                _btState.value = BtState.ScanSuccess(btDevices)
-//                            }
-//                        }
-                        device
-                        btRepository.stopLowEnergyScan(null)
+                        btDevices.first {
+                            it.id == device.id
+                        }.apply {
+                            bytes = device.bytes
+                        }
                     }
                 })
             }

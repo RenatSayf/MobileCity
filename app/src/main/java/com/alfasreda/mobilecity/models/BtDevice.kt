@@ -3,12 +3,18 @@
 package com.alfasreda.mobilecity.models
 
 import android.bluetooth.BluetoothDevice
+import com.alfasreda.mobilecity.BuildConfig
+import com.alfasreda.mobilecity.utils.DataSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 data class BtDevice(
     val device: BluetoothDevice? = null,
     val rssi: Int,
-    val bytes: ByteArray?
+    var bytes: ByteArray?
 ) {
 
     companion object {
@@ -22,14 +28,12 @@ data class BtDevice(
 
     val id: String
         get() {
-            return if (bytes != null) {
-                try {
-                    bytes.decodeToString(5, 15, true)
-                } catch (e: Exception) {
-                    "ID000000${abs(rssi)}"
-                }
+            return try {
+                bytes?.decodeToString(5, 15, true) ?: UNDEFINED
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                UNDEFINED
             }
-            else "ID000000${abs(rssi)}"
         }
 
     private val macAddress: String
@@ -50,9 +54,28 @@ data class BtDevice(
             }
         }
 
+    fun call() {
+        when(type) {
+            CITY_OBJECT -> {
+                bytes?.set(24, 37.toByte())
+                CoroutineScope(Dispatchers.Default).launch {
+                    delay(30000)
+                    bytes?.set(24, 5.toByte())
+                }
+            }
+            TRANSPORT -> {
+                bytes?.set(24, 27.toByte())
+                CoroutineScope(Dispatchers.Default).launch {
+                    delay(30000)
+                    bytes?.set(24, 7.toByte())
+                }
+            }
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         other as BtDevice
-        return macAddress == other.macAddress
+        return id == other.id
     }
 
     override fun hashCode(): Int {

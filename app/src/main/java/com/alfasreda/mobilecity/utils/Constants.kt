@@ -5,3 +5,8 @@ object Speech {
     const val LANG_MISSING_DATA = -2
     const val LANG_NOT_SUPPORTED = -3
 }
+
+object DataSource {
+    const val NETWORK = "NETWORK"
+    const val LOCALHOST ="LOCALHOST"
+}

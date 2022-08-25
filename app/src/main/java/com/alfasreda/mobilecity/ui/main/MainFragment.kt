@@ -402,7 +402,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
 
     override fun onAdapterPreviousBtnClick(position: Int) {
         try {
-            binding.vpList.setCurrentItem(position - 1, true)
+            binding.vpList.setCurrentItem(position - 1, false)
         } catch (e: IndexOutOfBoundsException) {
             if (BuildConfig.DEBUG) e.printStackTrace()
         }
@@ -410,7 +410,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
 
     override fun onAdapterNextBtnClick(position: Int) {
         try {
-            binding.vpList.setCurrentItem(position + 1, true)
+            binding.vpList.setCurrentItem(position + 1, false)
         } catch (e: IndexOutOfBoundsException) {
             if (BuildConfig.DEBUG) e.printStackTrace()
         }

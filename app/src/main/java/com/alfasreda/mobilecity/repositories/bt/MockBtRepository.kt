@@ -2,10 +2,7 @@
 
 package com.alfasreda.mobilecity.repositories.bt
 
-import com.alfasreda.mobilecity.models.BtDevice
-import com.alfasreda.mobilecity.models.busBytes
-import com.alfasreda.mobilecity.models.pharmacyBytes
-import com.alfasreda.mobilecity.models.tramBytes
+import com.alfasreda.mobilecity.models.*
 import kotlinx.coroutines.*
 
 class MockBtRepository : BtRepository() {
@@ -23,6 +20,13 @@ class MockBtRepository : BtRepository() {
 
     override fun startAdvertising(deviceId: String, listener: IBtAdvertisingListener) {
         super.startAdvertising(deviceId, listener)
+
+        isScan = true
+        devices.first {
+            it.id == deviceId
+        }.apply {
+           this.call()
+        }
     }
 
     override fun startLowEnergyScan(listener: IBtScanListener) {
@@ -56,7 +60,7 @@ class MockBtRepository : BtRepository() {
         },
         BtDevice(
             rssi = -55,
-            bytes = pharmacyBytes
+            bytes = tramStationBytes
         ).apply {
             description = "Остановка трамвая. Ж/д вокзал"
         },
@@ -71,6 +75,12 @@ class MockBtRepository : BtRepository() {
             bytes = tramBytes
         ).apply {
             description = "Трамвай №3"
+        },
+        BtDevice(
+            rssi = -45,
+            bytes = superMarketBytes
+        ).apply {
+            description = "Супермаркет Пятёрочка. Челюскинцев, 23"
         }
     )
 }

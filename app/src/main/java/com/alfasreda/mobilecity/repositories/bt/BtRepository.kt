@@ -52,8 +52,6 @@ open class BtRepository {
                 listener.onAdvertisingError(errorCode)
             }
         })
-        val s = 5.toString(2)
-        s
     }
 
     @SuppressLint("MissingPermission")
