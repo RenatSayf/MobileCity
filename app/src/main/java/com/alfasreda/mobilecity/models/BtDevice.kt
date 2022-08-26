@@ -22,6 +22,10 @@ data class BtDevice(
         const val UNDEFINED = "UNDEFINED"
         const val CITY_OBJECT = "CITY_OBJECT"
         const val TRANSPORT = "TRANSPORT"
+        const val BUS = "BUS"
+        const val TRAM = "TRAM"
+        const val TROLLEYBUS = "TROLLEYBUS"
+        const val TRAFFIC_LIGHT = "TRAFFIC_LIGHT"
     }
 
     var description: String = ""
@@ -46,11 +50,22 @@ data class BtDevice(
             val value = bytes?.get(7)?.toInt()?.toChar() ?: ""
             return when(value) {
                 '0' -> CITY_OBJECT
-                '1' -> TRANSPORT
-                '2' -> TRANSPORT
-                '3' -> TRANSPORT
-                '4' -> CITY_OBJECT
+                '1' -> BUS
+                '2' -> TROLLEYBUS
+                '3' -> TRAM
+                '4' -> TRAFFIC_LIGHT
                 else -> UNDEFINED
+            }
+        }
+
+    val route: String
+        get() {
+            return try {
+                val string = bytes?.decodeToString(26, 34, true)
+                string?.replace("0", "") ?: ""
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                ""
             }
         }
 
@@ -64,6 +79,7 @@ data class BtDevice(
                 }
             }
             TRANSPORT -> {
+
                 bytes?.set(24, 27.toByte())
                 CoroutineScope(Dispatchers.Default).launch {
                     delay(30000)
@@ -72,6 +88,15 @@ data class BtDevice(
             }
         }
     }
+
+    val isCall: Boolean
+        get() {
+            return when(type) {
+                CITY_OBJECT -> bytes?.get(24) == 37.toByte()
+                TRANSPORT -> bytes?.get(24) == 27.toByte()
+                else -> false
+            }
+        }
 
     override fun equals(other: Any?): Boolean {
         other as BtDevice

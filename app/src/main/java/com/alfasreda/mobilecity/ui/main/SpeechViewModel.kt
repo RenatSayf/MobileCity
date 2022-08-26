@@ -52,12 +52,19 @@ class SpeechViewModel(private val app: Application) : AndroidViewModel(app), Tex
         }
     }
 
-    fun speak(text: String, listener: UtteranceProgressListener? = null) {
+    fun speak(text: String, speakId: String = UTTERANCE_Id, listener: UtteranceProgressListener? = null) {
         if (_state.value == State.InitSuccess) {
-            speech.speak(text, TextToSpeech.QUEUE_ADD, Bundle(), UTTERANCE_Id)
+            speech.speak(text, TextToSpeech.QUEUE_ADD, Bundle(), speakId)
             if (listener != null) {
                 speech.setOnUtteranceProgressListener(listener)
             }
         }
+    }
+
+    override fun onCleared() {
+
+        speech.shutdown()
+
+        super.onCleared()
     }
 }

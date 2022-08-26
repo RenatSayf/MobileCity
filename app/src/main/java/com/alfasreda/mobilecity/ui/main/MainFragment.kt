@@ -7,6 +7,7 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
+import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +26,7 @@ import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceListAdapter
 import com.alfasreda.mobilecity.ui.main.adapters.BtDevicePageAdapter
 import com.alfasreda.mobilecity.ui.splash.KEY_FIRST_RUN
-import com.alfasreda.mobilecity.utils.Speech
-import com.alfasreda.mobilecity.utils.appPref
-import com.alfasreda.mobilecity.utils.setUpToolBar
-import com.alfasreda.mobilecity.utils.showSnackBar
+import com.alfasreda.mobilecity.utils.*
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
@@ -189,7 +187,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                             }
                             is MainViewModel.ScreenState.TransportMode -> {
                                 val filteredData = data.filter {
-                                    it.type == BtDevice.TRANSPORT
+                                    it.type == BtDevice.BUS || it.type == BtDevice.TROLLEYBUS || it.type == BtDevice.TRAM
                                 }
                                 when(screenState.mode) {
                                     MainViewModel.DisplayMode.Page -> {
@@ -419,6 +417,24 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     override fun onAdapterItemOnClick(device: BtDevice) {
         val id = device.id
         mainVM.startAdvertising(id)
+        speechVM.speak("Вызываю", speakId = "XXX", listener = object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {}
+
+            override fun onDone(utteranceId: String?) {
+                if (utteranceId == "XXX") {
+                    appRingtone()?.play()
+                }
+            }
+
+            @Deprecated("Deprecated in Java", ReplaceWith(
+                "appRingtone()?.play()",
+                "com.alfasreda.mobilecity.utils.appRingtone"
+            )
+            )
+            override fun onError(utteranceId: String?) {
+                //appRingtone()?.play()
+            }
+        })
     }
 
     override fun onAdapterItemLongClick(description: String) {

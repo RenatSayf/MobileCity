@@ -54,33 +54,69 @@ class MockBtRepository : BtRepository() {
     private val devices = listOf<BtDevice>(
         BtDevice(
             rssi = -66,
-            bytes = pharmacyBytes
+            bytes = pharmacyBytes.clone().apply {
+                set(7, 48) // device type city-object=48, bus=49, trolleybus=50, tram=51
+                set(14, 49) // id = 49..57
+                set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
+            }
         ).apply {
                 description = "Аптека Живика. Улица Челюскинцев, 19"
         },
         BtDevice(
             rssi = -55,
-            bytes = tramStationBytes
+            bytes = pharmacyBytes.clone().apply {
+                set(7, 48) // device type city-object=48, bus=49, trolleybus=50, tram=51
+                set(14, 50) // id = 49..57
+                set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
+            }
         ).apply {
             description = "Остановка трамвая. Ж/д вокзал"
         },
         BtDevice(
             rssi = -59,
-            bytes = busBytes
+            bytes = pharmacyBytes.clone().apply {
+                set(7, 49) // device type city-object=48, bus=49, trolleybus=50, tram=51
+                set(14, 51) // id = 49..57
+                set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
+                set(32, 53.toByte()) //route number 48..57
+                set(33, 54.toByte()) //route number 48..57
+            }
         ).apply {
             description = "Автобус №56"
         },
         BtDevice(
             rssi = -51,
-            bytes = tramBytes
+            bytes = pharmacyBytes.clone().apply {
+                set(7, 51) // device type city-object=48, bus=49, trolleybus=50, tram=51
+                set(14, 52) // id = 49..57
+                set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
+                set(32, 48.toByte()) //route number 48..57
+                set(33, 51.toByte()) //route number 48..57
+            }
         ).apply {
-            description = "Трамвай №3"
+            description = ""
         },
         BtDevice(
             rssi = -45,
-            bytes = superMarketBytes
+            bytes = pharmacyBytes.clone().apply {
+                set(7, 48.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51
+                set(14, 53.toByte()) // id = 49..57
+                set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
+            }
         ).apply {
             description = "Супермаркет Пятёрочка. Челюскинцев, 23"
+        },
+        BtDevice(
+            rssi = -63,
+            bytes = pharmacyBytes.clone().apply {
+                set(7, 50.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51
+                set(14, 54.toByte()) // id = 49..57
+                set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
+                set(32, 49.toByte()) //route number 48..57
+                set(33, 50.toByte()) //route number 48..57
+            }
+        ).apply {
+            description = ""
         }
     )
 }

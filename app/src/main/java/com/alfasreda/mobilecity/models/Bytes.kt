@@ -9,7 +9,7 @@ val pharmacyBytes = arrayOf(
     9,
     73,
     68,
-    48,
+    48, //device type
     48,
     48,
     48,
@@ -26,7 +26,7 @@ val pharmacyBytes = arrayOf(
     0,
     0,
     0,
-    5,
+    5, //sign of a call
     0,
     0,
     0,
@@ -76,7 +76,7 @@ val superMarketBytes = arrayOf(
     9,
     73,
     68,
-    48,
+    48, //device type
     48,
     48,
     48,
@@ -93,7 +93,7 @@ val superMarketBytes = arrayOf(
     0,
     0,
     0,
-    5,
+    5, //sign of a call
     0,
     0,
     0,
@@ -143,7 +143,7 @@ val tramStationBytes = arrayOf(
     9,
     73,
     68,
-    48,
+    48, //device type
     48,
     48,
     48,
@@ -160,7 +160,7 @@ val tramStationBytes = arrayOf(
     0,
     0,
     0,
-    7,
+    5, //sign of a call
     0,
     0,
     0,
@@ -210,7 +210,7 @@ val busBytes = arrayOf(
     9,
     73,
     68,
-    49,
+    49, //device type
     48,
     48,
     48,
@@ -227,7 +227,7 @@ val busBytes = arrayOf(
     0,
     0,
     0,
-    5,
+    7, //sign of a call
     0,
     0,
     0,
@@ -235,8 +235,8 @@ val busBytes = arrayOf(
     0,
     0,
     0,
-    0,
-    0,
+    53, //route number
+    54, //route number
     0,
     0,
     0,
@@ -277,7 +277,7 @@ val tramBytes = arrayOf(
     9,
     73,
     68,
-    51,
+    51, //device type
     48,
     48,
     48,
@@ -294,7 +294,7 @@ val tramBytes = arrayOf(
     0,
     0,
     0,
-    5,
+    55, //sign of a call
     0,
     0,
     0,
@@ -302,8 +302,8 @@ val tramBytes = arrayOf(
     0,
     0,
     0,
-    0,
-    0,
+    0, //route number
+    51, //route number
     0,
     0,
     0,

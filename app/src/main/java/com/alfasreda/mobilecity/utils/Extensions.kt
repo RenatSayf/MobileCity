@@ -3,12 +3,15 @@ package com.alfasreda.mobilecity.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.alfasreda.mobilecity.databinding.ToolBarBinding
 import com.google.android.material.snackbar.Snackbar
-import java.nio.charset.Charset
+import java.io.File
 
 fun Context.checkPermission(permission: String): Boolean {
     return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
@@ -80,3 +83,14 @@ val Fragment.appPref: SharedPreferences
     get() {
         return requireContext().appPref
     }
+
+fun Context.appRingtone(): Ringtone? {
+    val uri = Uri.fromFile(File("//android_asset/ringtones/android.mp3"))
+    val ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
+    return RingtoneManager.getRingtone(this, ringtoneUri)
+}
+
+fun Fragment.appRingtone(): Ringtone? {
+    return requireContext().appRingtone()
+}
+
