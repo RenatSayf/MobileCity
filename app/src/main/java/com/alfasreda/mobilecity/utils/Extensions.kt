@@ -85,9 +85,7 @@ val Fragment.appPref: SharedPreferences
     }
 
 fun Context.appRingtone(): Ringtone? {
-    val uri = Uri.fromFile(File("//android_asset/ringtones/android.mp3"))
-    val ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM)
-    return RingtoneManager.getRingtone(this, ringtoneUri)
+    return AppRingtone.instance(this)
 }
 
 fun Fragment.appRingtone(): Ringtone? {

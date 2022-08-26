@@ -47,7 +47,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     })
 
     private val pageAdapter: BtDevicePageAdapter by lazy {
-        BtDevicePageAdapter(this)
+        BtDevicePageAdapter(viewLifecycleOwner, this)
     }
 
     private val listAdapter: BtDeviceListAdapter by lazy {
@@ -425,14 +425,15 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                     appRingtone()?.play()
                 }
             }
-
             @Deprecated("Deprecated in Java", ReplaceWith(
                 "appRingtone()?.play()",
                 "com.alfasreda.mobilecity.utils.appRingtone"
             )
             )
             override fun onError(utteranceId: String?) {
-                //appRingtone()?.play()
+                if (utteranceId == "XXX") {
+                    appRingtone()?.play()
+                }
             }
         })
     }
@@ -441,7 +442,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
         speechVM.speak(description)
     }
 
-    override fun onAdapterItemBind(description: String) {
+    override fun onAdapterItemAttached(description: String) {
         speechVM.speak(description)
     }
 

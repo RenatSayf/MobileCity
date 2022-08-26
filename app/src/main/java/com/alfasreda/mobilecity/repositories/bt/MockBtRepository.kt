@@ -51,10 +51,10 @@ class MockBtRepository : BtRepository() {
         isScan = false
     }
 
-    private val devices = listOf<BtDevice>(
+    private val devices = listOf(
         BtDevice(
             rssi = -66,
-            bytes = pharmacyBytes.clone().apply {
+            bytes = mockBytes.clone().apply {
                 set(7, 48) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 49) // id = 49..57
                 set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
@@ -64,7 +64,7 @@ class MockBtRepository : BtRepository() {
         },
         BtDevice(
             rssi = -55,
-            bytes = pharmacyBytes.clone().apply {
+            bytes = mockBytes.clone().apply {
                 set(7, 48) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 50) // id = 49..57
                 set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
@@ -74,7 +74,7 @@ class MockBtRepository : BtRepository() {
         },
         BtDevice(
             rssi = -59,
-            bytes = pharmacyBytes.clone().apply {
+            bytes = mockBytes.clone().apply {
                 set(7, 49) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 51) // id = 49..57
                 set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
@@ -86,7 +86,7 @@ class MockBtRepository : BtRepository() {
         },
         BtDevice(
             rssi = -51,
-            bytes = pharmacyBytes.clone().apply {
+            bytes = mockBytes.clone().apply {
                 set(7, 51) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 52) // id = 49..57
                 set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
@@ -94,11 +94,11 @@ class MockBtRepository : BtRepository() {
                 set(33, 51.toByte()) //route number 48..57
             }
         ).apply {
-            description = ""
+            description = "Трамвай №3"
         },
         BtDevice(
             rssi = -45,
-            bytes = pharmacyBytes.clone().apply {
+            bytes = mockBytes.clone().apply {
                 set(7, 48.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 53.toByte()) // id = 49..57
                 set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
@@ -108,7 +108,7 @@ class MockBtRepository : BtRepository() {
         },
         BtDevice(
             rssi = -63,
-            bytes = pharmacyBytes.clone().apply {
+            bytes = mockBytes.clone().apply {
                 set(7, 50.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 54.toByte()) // id = 49..57
                 set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
@@ -116,7 +116,7 @@ class MockBtRepository : BtRepository() {
                 set(33, 50.toByte()) //route number 48..57
             }
         ).apply {
-            description = ""
+            description = "Троллейбус №12"
         }
     )
 }

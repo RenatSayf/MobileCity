@@ -6,17 +6,20 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemBleToPageBinding
 import com.alfasreda.mobilecity.databinding.ItemTransportToPageBinding
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.utils.appRingtone
 
 private const val CITY_OBJECT = 0
 private const val TRANSPORT = 1
 
 class BtDevicePageAdapter(
+    private val lifecycleOwner: LifecycleOwner,
     private val listener: Listener
 ) : ListAdapter<BtDevice, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
@@ -91,7 +94,7 @@ class BtDevicePageAdapter(
         when(holder) {
             is CityObjectViewHolder -> {
                 val text = holder.itemView.findViewById<TextView>(R.id.tv_object_name).text
-                listener.onAdapterItemBind(text.toString())
+                listener.onAdapterItemAttached(text.toString())
             }
             is TransportViewHolder -> {
                 with(holder.itemView) {
@@ -99,7 +102,7 @@ class BtDevicePageAdapter(
                     val routeTitle = findViewById<TextView>(R.id.tv_route_title).text
                     val routeValue = findViewById<TextView>(R.id.tv_route_value).text
                     val text = "$typeText. $routeTitle $routeValue"
-                    listener.onAdapterItemBind(text)
+                    listener.onAdapterItemAttached(text)
                 }
             }
         }
@@ -165,7 +168,19 @@ class BtDevicePageAdapter(
                 }
                 btnCall.setOnClickListener {
                     listener.onAdapterItemOnClick(device)
-                    layoutItem.setBackgroundColor(ContextCompat.getColor(it.context, R.color.super_light_green))
+                }
+                device.isCallLiveData.observe(lifecycleOwner) {
+                    val appRingtone = itemView.context.appRingtone()
+                    if (it) {
+                        layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
+                    }
+                    else {
+                        layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+                        appRingtone?.let { ringTone ->
+                            val playing = ringTone.isPlaying
+                            ringTone.stop()
+                        }
+                    }
                 }
             }
         }
@@ -176,7 +191,7 @@ class BtDevicePageAdapter(
         fun onAdapterNextBtnClick(position: Int)
         fun onAdapterItemOnClick(device: BtDevice)
         fun onAdapterItemLongClick(description: String)
-        fun onAdapterItemBind(description: String)
+        fun onAdapterItemAttached(description: String)
         fun onAdapterItemsAdded(count: Int)
     }
 }

@@ -3,12 +3,10 @@
 package com.alfasreda.mobilecity.models
 
 import android.bluetooth.BluetoothDevice
+import android.os.Handler
+import android.os.Looper
+import androidx.lifecycle.MutableLiveData
 import com.alfasreda.mobilecity.BuildConfig
-import com.alfasreda.mobilecity.utils.DataSource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 data class BtDevice(
@@ -69,22 +67,33 @@ data class BtDevice(
             }
         }
 
-    fun call() {
-        when(type) {
-            CITY_OBJECT -> {
-                bytes?.set(24, 37.toByte())
-                CoroutineScope(Dispatchers.Default).launch {
-                    delay(30000)
-                    bytes?.set(24, 5.toByte())
-                }
-            }
-            TRANSPORT -> {
+    private var handler: Handler = Handler(Looper.getMainLooper())
 
-                bytes?.set(24, 27.toByte())
-                CoroutineScope(Dispatchers.Default).launch {
-                    delay(30000)
-                    bytes?.set(24, 7.toByte())
+    fun call() {
+        when {
+            type == CITY_OBJECT -> {
+                bytes?.let {
+                    it[24] = 37.toByte()
+                    isCallLiveData.value = true
                 }
+                handler.postDelayed({
+                    bytes?.let {
+                        it[24] = 5.toByte()
+                        isCallLiveData.value = false
+                    }
+                }, 30000)
+            }
+            type == BUS || type == TROLLEYBUS || type == TRAM -> {
+                bytes?.let {
+                    it[24] = 27.toByte()
+                    isCallLiveData.value = true
+                }
+                handler.postDelayed({
+                    bytes?.let {
+                        it[24] = 7.toByte()
+                        isCallLiveData.value = false
+                    }
+                }, 10000)
             }
         }
     }
@@ -97,6 +106,13 @@ data class BtDevice(
                 else -> false
             }
         }
+
+    val isCallLiveData = MutableLiveData(false).apply {
+        when(type) {
+            CITY_OBJECT -> value = bytes?.get(24) == 37.toByte()
+            TRANSPORT -> value = bytes?.get(24) == 27.toByte()
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         other as BtDevice
