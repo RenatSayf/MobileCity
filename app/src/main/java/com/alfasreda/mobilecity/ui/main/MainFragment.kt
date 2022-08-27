@@ -414,7 +414,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
         }
     }
 
-    override fun onAdapterItemOnClick(device: BtDevice) {
+    override fun onAdapterBtnCallClick(device: BtDevice) {
         val id = device.id
         mainVM.startAdvertising(id)
         speechVM.speak("Вызываю", speakId = "XXX", listener = object : UtteranceProgressListener() {

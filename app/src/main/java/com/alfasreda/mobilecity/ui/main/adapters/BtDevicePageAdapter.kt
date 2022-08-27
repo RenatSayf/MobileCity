@@ -10,7 +10,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.alfasreda.mobilecity.R
-import com.alfasreda.mobilecity.databinding.ItemBleToPageBinding
+import com.alfasreda.mobilecity.databinding.ItemObjectToPageBinding
 import com.alfasreda.mobilecity.databinding.ItemTransportToPageBinding
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.utils.appRingtone
@@ -54,7 +54,7 @@ class BtDevicePageAdapter(
 
         return when(viewType) {
             CITY_OBJECT -> {
-                val binding = ItemBleToPageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                val binding = ItemObjectToPageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 CityObjectViewHolder(binding)
             }
             TRANSPORT -> {
@@ -110,7 +110,7 @@ class BtDevicePageAdapter(
 
 
 
-    inner class CityObjectViewHolder(private val binding: ItemBleToPageBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CityObjectViewHolder(private val binding: ItemObjectToPageBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(device: BtDevice, position: Int, count: Int) {
 
@@ -124,7 +124,7 @@ class BtDevicePageAdapter(
                 btnNext.isEnabled = position < count - 1
 
                 tvObjectName.setOnClickListener {
-                    listener.onAdapterItemOnClick(device)
+                    listener.onAdapterBtnCallClick(device)
                 }
 
                 tvObjectName.setOnLongClickListener {
@@ -136,6 +136,19 @@ class BtDevicePageAdapter(
                 }
                 btnNext.setOnClickListener {
                     listener.onAdapterNextBtnClick(position)
+                }
+                btnCall.setOnClickListener {
+                    listener.onAdapterBtnCallClick(device)
+                }
+                device.isCallLiveData.observe(lifecycleOwner) {
+                    val appRingtone = itemView.context.appRingtone()
+                    if (it) {
+                        layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
+                    }
+                    else {
+                        layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+                        appRingtone?.stop()
+                    }
                 }
             }
         }
@@ -167,7 +180,7 @@ class BtDevicePageAdapter(
                     listener.onAdapterNextBtnClick(position)
                 }
                 btnCall.setOnClickListener {
-                    listener.onAdapterItemOnClick(device)
+                    listener.onAdapterBtnCallClick(device)
                 }
                 device.isCallLiveData.observe(lifecycleOwner) {
                     val appRingtone = itemView.context.appRingtone()
@@ -176,10 +189,7 @@ class BtDevicePageAdapter(
                     }
                     else {
                         layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
-                        appRingtone?.let { ringTone ->
-                            val playing = ringTone.isPlaying
-                            ringTone.stop()
-                        }
+                        appRingtone?.stop()
                     }
                 }
             }
@@ -189,7 +199,7 @@ class BtDevicePageAdapter(
     interface Listener {
         fun onAdapterPreviousBtnClick(position: Int)
         fun onAdapterNextBtnClick(position: Int)
-        fun onAdapterItemOnClick(device: BtDevice)
+        fun onAdapterBtnCallClick(device: BtDevice)
         fun onAdapterItemLongClick(description: String)
         fun onAdapterItemAttached(description: String)
         fun onAdapterItemsAdded(count: Int)

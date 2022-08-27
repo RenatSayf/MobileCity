@@ -13,6 +13,7 @@
     android:animateLayoutChanges="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
@@ -32,15 +33,33 @@
         <TextView
             android:id="@+id/tv_object_name"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="@+id/tv_objects_count"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btn_call"
+            app:layout_constraintVertical_chainStyle="packed"
             android:gravity="center"
-            android:text="Аптека Живика. Улица Челюскинцев, 19"
+            android:text="Аптека Живика, улица Челюскинцев, 19"
             android:textSize="24dp"
             android:textColor="@color/black"
             android:textStyle="bold"
             android:padding="8dp"
+            />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_object_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/barrier_nav_btn"
+            android:layout_marginTop="24dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="Найти вход"
+            android:contentDescription="Активировать звуковой сигнал"
+            style="@style/AppButton"
             />
 
         <View

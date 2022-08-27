@@ -57,7 +57,7 @@ class MockBtRepository : BtRepository() {
             bytes = mockBytes.clone().apply {
                 set(7, 48) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 49) // id = 49..57
-                set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
+                set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
                 description = "Аптека Живика. Улица Челюскинцев, 19"
@@ -67,7 +67,7 @@ class MockBtRepository : BtRepository() {
             bytes = mockBytes.clone().apply {
                 set(7, 48) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 50) // id = 49..57
-                set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
+                set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
             description = "Остановка трамвая. Ж/д вокзал"
@@ -77,7 +77,7 @@ class MockBtRepository : BtRepository() {
             bytes = mockBytes.clone().apply {
                 set(7, 49) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 51) // id = 49..57
-                set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
+                set(24, 7.toByte()) //sign of a call: city-object=53, transport=55
                 set(32, 53.toByte()) //route number 48..57
                 set(33, 54.toByte()) //route number 48..57
             }
@@ -89,7 +89,7 @@ class MockBtRepository : BtRepository() {
             bytes = mockBytes.clone().apply {
                 set(7, 51) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 52) // id = 49..57
-                set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
+                set(24, 7.toByte()) //sign of a call: city-object=53, transport=55
                 set(32, 48.toByte()) //route number 48..57
                 set(33, 51.toByte()) //route number 48..57
             }
@@ -101,7 +101,7 @@ class MockBtRepository : BtRepository() {
             bytes = mockBytes.clone().apply {
                 set(7, 48.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 53.toByte()) // id = 49..57
-                set(24, 53.toByte()) //sign of a call: city-object=53, transport=55
+                set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
             description = "Супермаркет Пятёрочка. Челюскинцев, 23"
@@ -111,7 +111,7 @@ class MockBtRepository : BtRepository() {
             bytes = mockBytes.clone().apply {
                 set(7, 50.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51
                 set(14, 54.toByte()) // id = 49..57
-                set(24, 55.toByte()) //sign of a call: city-object=53, transport=55
+                set(24, 7.toByte()) //sign of a call: city-object=53, transport=55
                 set(32, 49.toByte()) //route number 48..57
                 set(33, 50.toByte()) //route number 48..57
             }
