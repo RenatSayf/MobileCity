@@ -79,7 +79,7 @@
                 android:id="@+id/rv_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:listitem="@layout/item_ble_to_list"
+                tools:listitem="@layout/item_object_to_list"
                 tools:itemCount="5"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="vertical"

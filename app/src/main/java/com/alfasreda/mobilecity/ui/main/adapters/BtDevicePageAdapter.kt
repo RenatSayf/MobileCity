@@ -69,8 +69,6 @@ class BtDevicePageAdapter(
                 throw IllegalStateException()
             }
         }
-
-
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

@@ -51,7 +51,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     }
 
     private val listAdapter: BtDeviceListAdapter by lazy {
-        BtDeviceListAdapter(this)
+        BtDeviceListAdapter(viewLifecycleOwner, this)
     }
 
     override fun onCreateView(
@@ -449,10 +449,6 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     override fun onAdapterItemsAdded(count: Int) {
 
         speechVM.speak("Видимых объектов $count")
-    }
-
-    override fun onListAdapterItemClick(device: BtDevice) {
-        speechVM.speak(device.description)
     }
 
 
