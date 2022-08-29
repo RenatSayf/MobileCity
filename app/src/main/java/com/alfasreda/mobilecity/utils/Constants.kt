@@ -10,3 +10,7 @@ object DataSource {
     const val NETWORK = "NETWORK"
     const val LOCALHOST ="LOCALHOST"
 }
+
+object PrefKeys {
+    const val IS_SPEECH = "IS_SPEECH"
+}

@@ -89,15 +89,19 @@ class BtDeviceListAdapter(
         fun bind(device: BtDevice) {
             with(binding) {
 
-                tvObjectName.text = device.description
-                tvObjectName.setOnClickListener {
+                tvObjectName.apply {
+                    text = device.description
+                    contentDescription = device.description
+                    setOnClickListener {
 
-                    listener.onAdapterBtnCallClick(device)
+                        listener.onAdapterBtnCallClick(device)
+                    }
+                    setOnLongClickListener {
+                        listener.onAdapterItemLongClick(device.description)
+                        true
+                    }
                 }
-                tvObjectName.setOnLongClickListener {
-                    listener.onAdapterItemLongClick(device.description)
-                    true
-                }
+
             }
         }
     }
@@ -109,11 +113,27 @@ class BtDeviceListAdapter(
 
                 val type = device.type
                 when(type) {
-                    BtDevice.BUS -> tvTransportType.text = "Автобус"
-                    BtDevice.TRAM -> tvTransportType.text = "Трамвай"
-                    BtDevice.TROLLEYBUS -> tvTransportType.text = "Троллейбус"
+                    BtDevice.BUS -> {
+                        tvTransportType.apply {
+                            text = "Автобус"; contentDescription = text
+                        }
+                    }
+                    BtDevice.TRAM -> {
+                        tvTransportType.apply {
+                            text = "Трамвай"; contentDescription = text
+                        }
+                    }
+                    BtDevice.TROLLEYBUS -> {
+                        tvTransportType.apply {
+                            text = "Троллейбус"; contentDescription = text
+                        }
+                    }
                 }
                 tvRouteValue.text = device.route
+
+                layoutRoute.apply {
+                    contentDescription = "${tvTransportType.contentDescription} ${tvRouteTitle.text} ${tvRouteValue.text}"
+                }
 
                 btnCall.setOnClickListener {
                     listener.onAdapterBtnCallClick(device)

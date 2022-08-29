@@ -28,6 +28,15 @@
         android:id="@+id/menuFragment"
         android:name="com.alfasreda.mobilecity.ui.menu.MenuFragment"
         android:label="fragment_menu"
-        tools:layout="@layout/fragment_menu" />
+        tools:layout="@layout/fragment_menu" >
+        <action
+            android:id="@+id/action_menuFragment_to_rootSettingsFragment"
+            app:destination="@id/rootSettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/rootSettingsFragment"
+        android:name="com.alfasreda.mobilecity.ui.settings.RootSettingsFragment"
+        android:label="fragment_root_settings"
+        tools:layout="@layout/fragment_root_settings" />
 
 </navigation>

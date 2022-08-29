@@ -18,6 +18,7 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.R
@@ -80,6 +81,10 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                 }
             }
         }
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val boolean1 = preferences.getBoolean("key_is_speech", true)
+
 
         with(binding) {
 
@@ -209,16 +214,6 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                             else -> {}
                         }
                     }
-//                    is MainViewModel.BtState.NoPermission -> {
-//                        permissionsBuilder(state.permission).build().send() { result ->
-//                            val granted = result.allGranted()
-//                            if (granted) {
-//                                mainVM.startAdvertising()
-//                            } else {
-//                                mainVM.stopBtScan()
-//                            }
-//                        }
-//                    }
                     MainViewModel.BtState.NoLocationPermission -> {
                         binding.btnCityObjects.isEnabled = false
                         binding.btnTransport.isEnabled = false

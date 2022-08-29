@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <PreferenceCategory
+        android:key="key_speech_title"
+        app:title="Звуковые настройки"
+        >
+
+        <SwitchPreferenceCompat
+            app:key="key_is_speech"
+            app:title="Автоматическое озвучивание"
+            app:summaryOn="Включено"
+            app:summaryOff="Выключено"
+            android:defaultValue="true"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

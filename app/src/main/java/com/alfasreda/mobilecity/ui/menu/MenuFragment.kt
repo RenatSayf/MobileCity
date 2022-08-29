@@ -52,7 +52,8 @@ class MenuFragment : Fragment() {
             }
 
             btnSettings.setOnClickListener {
-                showSnackBar("Раздел находится в разработке")
+                //showSnackBar("Раздел находится в разработке")
+                findNavController().navigate(R.id.action_menuFragment_to_rootSettingsFragment)
             }
 
             btnFilter.setOnClickListener {
