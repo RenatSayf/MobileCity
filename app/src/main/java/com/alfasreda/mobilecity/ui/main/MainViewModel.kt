@@ -139,7 +139,7 @@ class MainViewModel(
                     btDevices.first {
                         it.id == device.id
                     }.apply {
-                        this.updateRSSI(device.rssi)
+                        this.updateRSSI(device.rssiLiveData.value)
                     }
                 }
             }

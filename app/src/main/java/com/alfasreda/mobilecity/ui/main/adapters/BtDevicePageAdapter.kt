@@ -129,10 +129,6 @@ class BtDevicePageAdapter(
                 btnPrevious.isEnabled = position > 0
                 btnNext.isEnabled = position < count - 1
 
-                tvObjectName.setOnClickListener {
-                    listener.onAdapterBtnCallClick(device)
-                }
-
                 tvObjectName.setOnLongClickListener {
                     listener.onAdapterItemLongClick(device.description)
                     true
@@ -157,11 +153,13 @@ class BtDevicePageAdapter(
                     }
                 }
 
-                device.rssiLiveData.observe(lifecycleOwner) { rssi ->
-                    countDownTimer.cancel()
-                    val value = "$rssi dB"
-                    tvRssiValue.text = value
-                    countDownTimer.start()
+                lifecycleOwner.lifecycleScope.launch {
+                    device.rssiLiveData.collect { rssi ->
+                        countDownTimer.cancel()
+                        val value = "$rssi dB"
+                        tvRssiValue.text = value
+                        countDownTimer.start()
+                    }
                 }
             }
         }
@@ -237,9 +235,11 @@ class BtDevicePageAdapter(
                     }
                 }
 
-                device.rssiLiveData.observe(lifecycleOwner) { rssi ->
-                    val value = "$rssi dB"
-                    tvRssiValue.text = value
+                lifecycleOwner.lifecycleScope.launch {
+                    device.rssiLiveData.collect { rssi ->
+                        val value = "$rssi dB"
+                        tvRssiValue.text = value
+                    }
                 }
             }
         }

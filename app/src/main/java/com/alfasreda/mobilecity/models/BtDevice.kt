@@ -39,10 +39,10 @@ data class BtDevice(
             }
         }
 
-    private val macAddress: String
-        get() {
-            return if (device != null) device.address else "00:00:00:${abs(rssi)}"
-        }
+//    private val macAddress: String
+//        get() {
+//            return if (device != null) device.address else "00:00:00:${abs(rssi)}"
+//        }
 
     val type: String
         get() {
@@ -115,9 +115,7 @@ data class BtDevice(
         }
     }
 
-    val rssiLiveData = MutableLiveData<Int>().apply {
-        value = this@BtDevice.rssi
-    }
+    val rssiLiveData = MutableStateFlow(0)
     fun updateRSSI(rssi: Int) {
         rssiLiveData.value = rssi
     }

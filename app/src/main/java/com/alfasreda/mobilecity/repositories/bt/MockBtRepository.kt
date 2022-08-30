@@ -36,9 +36,9 @@ class MockBtRepository : BtRepository() {
         CoroutineScope(Dispatchers.IO).launch {
 
             while (isScan) {
-                delay(200)
                 withContext(Dispatchers.Main) {
                     devices.forEach { device ->
+                        delay(200)
                         listener.onLeScan(device.apply {
                             this.updateRSSI(-(40..75).random())
                         })
