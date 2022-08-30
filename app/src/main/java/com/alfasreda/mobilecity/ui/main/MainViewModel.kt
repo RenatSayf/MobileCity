@@ -135,6 +135,13 @@ class MainViewModel(
                         _btState.value = BtState.ScanSuccess(btDevices)
                     }
                 }
+                else {
+                    btDevices.first {
+                        it.id == device.id
+                    }.apply {
+                        this.updateRSSI(device.rssi)
+                    }
+                }
             }
         })
     }

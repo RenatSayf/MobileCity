@@ -114,6 +114,13 @@ data class BtDevice(
         }
     }
 
+    val rssiLiveData = MutableLiveData<Int>().apply {
+        value = this@BtDevice.rssi
+    }
+    fun updateRSSI(rssi: Int) {
+        rssiLiveData.value = rssi
+    }
+
     override fun equals(other: Any?): Boolean {
         other as BtDevice
         return id == other.id

@@ -148,6 +148,10 @@ class BtDevicePageAdapter(
                         appRingtone?.stop()
                     }
                 }
+                device.rssiLiveData.observe(lifecycleOwner) { rssi ->
+                    val value = "$rssi dB"
+                    tvRssiValue.text = value
+                }
             }
         }
     }
@@ -203,6 +207,10 @@ class BtDevicePageAdapter(
                         layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
                         appRingtone?.stop()
                     }
+                }
+                device.rssiLiveData.observe(lifecycleOwner) { rssi ->
+                    val value = "$rssi dB"
+                    tvRssiValue.text = value
                 }
             }
         }
