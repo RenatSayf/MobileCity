@@ -4,6 +4,7 @@ package com.alfasreda.mobilecity.repositories.bt
 
 import com.alfasreda.mobilecity.models.*
 import kotlinx.coroutines.*
+import kotlin.random.Random
 
 class MockBtRepository : BtRepository() {
 
@@ -37,8 +38,10 @@ class MockBtRepository : BtRepository() {
             while (isScan) {
                 delay(200)
                 withContext(Dispatchers.Main) {
-                    devices.forEach {
-                        listener.onLeScan(it)
+                    devices.forEach { device ->
+                        listener.onLeScan(device.apply {
+                            this.updateRSSI(-(40..75).random())
+                        })
                     }
                 }
             }

@@ -2,18 +2,23 @@
 
 package com.alfasreda.mobilecity.ui.main.adapters
 
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemObjectToPageBinding
 import com.alfasreda.mobilecity.databinding.ItemTransportToPageBinding
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.utils.appRingtone
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val CITY_OBJECT = 0
 private const val TRANSPORT = 1
@@ -110,8 +115,11 @@ class BtDevicePageAdapter(
 
     inner class CityObjectViewHolder(private val binding: ItemObjectToPageBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        private var positionIndex: Int = -1
+
         fun bind(device: BtDevice, position: Int, count: Int) {
 
+            positionIndex = position
             with(binding) {
 
                 tvObjectName.text = device.description
@@ -148,9 +156,29 @@ class BtDevicePageAdapter(
                         appRingtone?.stop()
                     }
                 }
+
                 device.rssiLiveData.observe(lifecycleOwner) { rssi ->
+                    countDownTimer.cancel()
                     val value = "$rssi dB"
                     tvRssiValue.text = value
+                    countDownTimer.start()
+                }
+            }
+        }
+
+        private var timer: CountDownTimer? = null
+
+        private val countDownTimer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                if (positionIndex >= 0) {
+                    try {
+                        devices.removeAt(positionIndex)
+                        notifyItemRemoved(positionIndex)
+                    } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) e.printStackTrace()
+                    }
                 }
             }
         }
@@ -208,6 +236,7 @@ class BtDevicePageAdapter(
                         appRingtone?.stop()
                     }
                 }
+
                 device.rssiLiveData.observe(lifecycleOwner) { rssi ->
                     val value = "$rssi dB"
                     tvRssiValue.text = value

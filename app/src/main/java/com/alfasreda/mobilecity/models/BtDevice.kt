@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import com.alfasreda.mobilecity.BuildConfig
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.abs
 
 data class BtDevice(
