@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.AndroidViewModel
+import androidx.preference.PreferenceManager
+import com.alfasreda.mobilecity.utils.defaultPref
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.*
@@ -55,6 +57,17 @@ class SpeechViewModel(private val app: Application) : AndroidViewModel(app), Tex
     fun speak(text: String, speakId: String = UTTERANCE_Id, listener: UtteranceProgressListener? = null) {
 
         if (_state.value == State.InitSuccess) {
+            speech.speak(text, TextToSpeech.QUEUE_ADD, Bundle(), speakId)
+            if (listener != null) {
+                speech.setOnUtteranceProgressListener(listener)
+            }
+        }
+    }
+
+    fun autoSpeak(text: String, speakId: String = UTTERANCE_Id, listener: UtteranceProgressListener? = null) {
+
+        val isSpeech = app.defaultPref.getBoolean("key_is_speech", true)
+        if (_state.value == State.InitSuccess && isSpeech) {
             speech.speak(text, TextToSpeech.QUEUE_ADD, Bundle(), speakId)
             if (listener != null) {
                 speech.setOnUtteranceProgressListener(listener)

@@ -9,6 +9,7 @@ import android.net.Uri
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import com.alfasreda.mobilecity.databinding.ToolBarBinding
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
@@ -82,6 +83,16 @@ val Context.appPref: SharedPreferences
 val Fragment.appPref: SharedPreferences
     get() {
         return requireContext().appPref
+    }
+
+val Context.defaultPref: SharedPreferences
+    get() {
+        return PreferenceManager.getDefaultSharedPreferences(this)
+    }
+
+val Fragment.defaultPref: SharedPreferences
+    get() {
+        return requireContext().defaultPref
     }
 
 fun Context.appRingtone(): Ringtone? {

@@ -33,6 +33,10 @@ class RootSettingsFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
         return binding.root
     }
 

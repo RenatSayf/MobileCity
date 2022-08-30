@@ -10,18 +10,6 @@
     android:background="@color/gray"
     tools:context=".ui.menu.MenuFragment">
 
-<!--    <androidx.appcompat.widget.Toolbar-->
-<!--        android:id="@+id/tool_bar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:title="Меню"-->
-<!--        app:titleTextColor="@color/white"-->
-<!--        app:navigationIcon="@drawable/ic_arrow_back_white"-->
-<!--        android:contentDescription="Меню"-->
-<!--        app:navigationContentDescription="Назад"-->
-<!--        android:background="@color/blue"-->
-<!--        />-->
-
     <include android:id="@+id/include_app_bar"
         layout="@layout/tool_bar"/>
 

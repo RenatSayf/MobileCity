@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".ui.settings.RootSettingsFragment">
 
@@ -16,5 +17,23 @@
         android:layout_weight="1"
         android:name="com.alfasreda.mobilecity.ui.settings.SettingsFragment"
         />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/gray"
+        >
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_back"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            style="@style/AppButton"
+            android:padding="18dp"
+            android:layout_margin="16dp"
+            android:text="Назад"
+            android:contentDescription="Назад на главный экран" />
+    </FrameLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

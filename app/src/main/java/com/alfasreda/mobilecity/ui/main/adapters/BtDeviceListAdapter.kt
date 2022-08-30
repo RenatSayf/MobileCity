@@ -101,6 +101,19 @@ class BtDeviceListAdapter(
                         true
                     }
                 }
+                btnCall.setOnClickListener {
+                    listener.onAdapterBtnCallClick(device)
+                }
+                device.isCallLiveData.observe(lifecycleOwner) {
+                    val appRingtone = itemView.context.appRingtone()
+                    if (it) {
+                        layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
+                    }
+                    else {
+                        layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+                        appRingtone?.stop()
+                    }
+                }
 
             }
         }
@@ -131,8 +144,12 @@ class BtDeviceListAdapter(
                 }
                 tvRouteValue.text = device.route
 
-                layoutRoute.apply {
+                layoutItem.apply {
                     contentDescription = "${tvTransportType.contentDescription} ${tvRouteTitle.text} ${tvRouteValue.text}"
+                    setOnLongClickListener { layout ->
+                        listener.onAdapterItemLongClick(layout.contentDescription.toString())
+                        true
+                    }
                 }
 
                 btnCall.setOnClickListener {

@@ -82,10 +82,6 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
             }
         }
 
-        val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val boolean1 = preferences.getBoolean("key_is_speech", true)
-
-
         with(binding) {
 
             setUpToolBar(
@@ -118,14 +114,14 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
             btnCityObjects.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
-                speechVM.speak("Режим городские объекты")
+                speechVM.autoSpeak("Режим городские объекты")
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
             }
 
             btnTransport.setOnClickListener {
                 //mainVM.startAdvertising()
                 //mainVM.startBtScan()
-                speechVM.speak("Режим транспорт")
+                speechVM.autoSpeak("Режим транспорт")
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
             }
 
@@ -134,7 +130,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                     mainVM.setBtState(MainViewModel.BtState.NoLocationPermission)
                 }
                 val message = (it as TextView).text
-                speechVM.speak(message.toString())
+                speechVM.autoSpeak(message.toString())
             }
 
             mainVM.btState.observe(viewLifecycleOwner) { state ->
@@ -151,12 +147,12 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                     }
                     MainViewModel.BtState.NotSupportBT -> {
                         val message = "Устройство не поддерживает блютуз"
-                        speechVM.speak(message)
+                        speechVM.autoSpeak(message)
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
                     }
                     MainViewModel.BtState.NoBtPermission -> {
                         val message = "Для работы приложения требуется включение блютуз. Нажмите что бы продолжить."
-                        speechVM.speak(message)
+                        speechVM.autoSpeak(message)
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
                     }
                     is MainViewModel.BtState.ScanFailure -> {
@@ -255,7 +251,7 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         btnTransport.style(R.style.AppButton)
                         val message = "Выберите режим обнаружения статических объектов или транспорта, нажав на соответствующие кнопки внизу экрана"
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
-                        speechVM.speak(message)
+                        speechVM.autoSpeak(message)
                     }
                     is MainViewModel.ScreenState.CityMode -> {
                         mainVM.startBtScan()
@@ -438,12 +434,12 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     }
 
     override fun onAdapterItemAttached(description: String) {
-        speechVM.speak(description)
+        speechVM.autoSpeak(description)
     }
 
     override fun onAdapterItemsAdded(count: Int) {
 
-        speechVM.speak("Видимых объектов $count")
+        speechVM.autoSpeak("Видимых объектов $count")
     }
 
 
