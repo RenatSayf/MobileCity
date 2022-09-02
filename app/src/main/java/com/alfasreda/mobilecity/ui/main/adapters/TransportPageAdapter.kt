@@ -81,20 +81,20 @@ class TransportPageAdapter(
 
                 val type = device.type
                 when(type) {
-                    BtDevice.BUS -> tvTransportType.apply {
+                    BtDevice.BUS -> tvObjectType.apply {
                         text = "Автобус"; contentDescription = text
                     }
-                    BtDevice.TRAM -> tvTransportType.apply {
+                    BtDevice.TRAM -> tvObjectType.apply {
                         text = "Трамвай"; contentDescription = text
                     }
-                    BtDevice.TROLLEYBUS -> tvTransportType.apply {
+                    BtDevice.TROLLEYBUS -> tvObjectType.apply {
                         text = "Троллейбус"; contentDescription = text
                     }
                 }
                 tvRouteValue.text = device.route
 
                 layoutItem.apply {
-                    contentDescription = "${tvTransportType.contentDescription} ${tvRouteTitle.text} ${tvRouteValue.text}"
+                    contentDescription = "${tvObjectType.contentDescription} ${tvRouteTitle.text} ${tvRouteValue.text}"
                     setOnLongClickListener { layout ->
                         listener.onAdapterItemLongClick(layout.contentDescription.toString())
                         true

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:toos="http://schemas.android.com/tools"
+    android:layout_margin="4dp"
+    >
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintDimensionRatio="1:1"
+        android:animateLayoutChanges="false">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/tv_object_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_address"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:text="Автобус"
+                android:textSize="16dp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:padding="0dp" />
+
+            <TextView
+                android:id="@+id/tv_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tv_object_type"
+                app:layout_constraintBottom_toTopOf="@+id/btn_call"
+                android:gravity="center"
+                android:text="Маршрут № 56"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:padding="0dp" />
+
+            <TextView
+                android:id="@+id/tv_rssi_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@+id/btn_call"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_call"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textSize="12dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                toos:text="-57 dB"
+                android:textAlignment="center" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/tv_rssi_value"
+                app:layout_constraintTop_toBottomOf="@+id/tv_address"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="1"
+                android:layout_marginTop="8dp"
+                android:contentDescription="Оповестить водителя"
+                android:src="@drawable/ic_campaign_green"
+                android:background="@drawable/bg_ripple_round_transparent"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

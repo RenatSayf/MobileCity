@@ -54,6 +54,8 @@ data class BtDevice(
             }
         }
 
+    var address: String = ""
+
     val route: String
         get() {
             return try {

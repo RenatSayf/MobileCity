@@ -100,12 +100,12 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                 mainVM.setDisplayMode(MainViewModel.DisplayMode.Page)
             }
 
-            btnCityObjects.setOnClickListener {
+            includeRadioGroup.btnObjects.setOnClickListener {
                 speechVM.autoSpeak("Режим городские объекты")
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
             }
 
-            btnTransport.setOnClickListener {
+            includeRadioGroup.btnTransport.setOnClickListener {
                 speechVM.autoSpeak("Режим транспорт")
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
             }
@@ -126,8 +126,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         startActivityForResult(enableBtIntent, 1111)
                     }
                     MainViewModel.BtState.BtIsOn -> {
-                        binding.btnCityObjects.isEnabled = true
-                        binding.btnTransport.isEnabled = true
+//                        binding.btnCityObjects.isEnabled = true
+//                        binding.btnTransport.isEnabled = true
                         mainVM.setScreenState(MainViewModel.ScreenState.NothingMode)
                     }
                     MainViewModel.BtState.NotSupportBT -> {
@@ -196,8 +196,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         }
                     }
                     MainViewModel.BtState.NoLocationPermission -> {
-                        binding.btnCityObjects.isEnabled = false
-                        binding.btnTransport.isEnabled = false
+//                        binding.btnCityObjects.isEnabled = false
+//                        binding.btnTransport.isEnabled = false
                         permissionsBuilder(Manifest.permission.ACCESS_FINE_LOCATION).build().send(){ result ->
                             if (result.allGranted()) {
                                 mainVM.initBluetooth()
@@ -215,16 +215,16 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     is MainViewModel.BtState.PermissionDenied -> {
                         val message = "Для работы приложения требуется доступ к данным о местоположении устройства."
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
-                        btnCityObjects.apply {
-                            isSelected = false
-                            isEnabled = false
-                            style(R.style.AppButton)
-                        }
-                        btnTransport.apply {
-                            isSelected = false
-                            isEnabled = false
-                            style(R.style.AppButton)
-                        }
+//                        btnCityObjects.apply {
+//                            isSelected = false
+//                            isEnabled = false
+//                            style(R.style.AppButton)
+//                        }
+//                        btnTransport.apply {
+//                            isSelected = false
+//                            isEnabled = false
+//                            style(R.style.AppButton)
+//                        }
                     }
                     is MainViewModel.BtState.UpdateData -> {
                         val device = state.device
@@ -241,8 +241,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
             mainVM.screenState.observe(viewLifecycleOwner) { state ->
                 when(state) {
                     MainViewModel.ScreenState.NothingMode -> {
-                        btnCityObjects.style(R.style.AppButton)
-                        btnTransport.style(R.style.AppButton)
+//                        btnCityObjects.style(R.style.AppButton)
+//                        btnTransport.style(R.style.AppButton)
                         val message = "Выберите режим обнаружения статических объектов или транспорта, нажав на соответствующие кнопки внизу экрана"
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
                         speechVM.autoSpeak(message)
@@ -260,14 +260,14 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         }
                         mainVM.startBtScan()
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
-                        btnCityObjects.apply {
-                            isSelected = true
-                            style(R.style.AppButtonSelected)
-                        }
-                        btnTransport.apply {
-                            isSelected = false
-                            style(R.style.AppButton)
-                        }
+//                        btnCityObjects.apply {
+//                            isSelected = true
+//                            style(R.style.AppButtonSelected)
+//                        }
+//                        btnTransport.apply {
+//                            isSelected = false
+//                            style(R.style.AppButton)
+//                        }
                         displayDeviceList(state.mode)
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
@@ -284,14 +284,14 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         }
                         mainVM.startBtScan()
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
-                        btnCityObjects.apply {
-                            isSelected = false
-                            style(R.style.AppButton)
-                        }
-                        btnTransport.apply {
-                            isSelected = true
-                            style(R.style.AppButtonSelected)
-                        }
+//                        btnCityObjects.apply {
+//                            isSelected = false
+//                            style(R.style.AppButton)
+//                        }
+//                        btnTransport.apply {
+//                            isSelected = true
+//                            style(R.style.AppButtonSelected)
+//                        }
                         displayDeviceList(state.mode)
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }

@@ -186,17 +186,17 @@ class BtDeviceListAdapter(
                 val type = device.type
                 when(type) {
                     BtDevice.BUS -> {
-                        tvTransportType.apply {
+                        tvObjectType.apply {
                             text = "Автобус"; contentDescription = text
                         }
                     }
                     BtDevice.TRAM -> {
-                        tvTransportType.apply {
+                        tvObjectType.apply {
                             text = "Трамвай"; contentDescription = text
                         }
                     }
                     BtDevice.TROLLEYBUS -> {
-                        tvTransportType.apply {
+                        tvObjectType.apply {
                             text = "Троллейбус"; contentDescription = text
                         }
                     }
@@ -204,7 +204,7 @@ class BtDeviceListAdapter(
                 tvRouteValue.text = device.route
 
                 layoutItem.apply {
-                    contentDescription = "${tvTransportType.contentDescription} ${tvRouteTitle.text} ${tvRouteValue.text}"
+                    contentDescription = "${tvObjectType.contentDescription} ${tvRouteTitle.text} ${tvRouteValue.text}"
                     setOnLongClickListener { layout ->
                         listener.onAdapterItemLongClick(layout.contentDescription.toString())
                         true

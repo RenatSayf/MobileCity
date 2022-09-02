@@ -64,7 +64,8 @@ class MockBtRepository : BtRepository() {
                 set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
-                description = "Аптека Живика. Улица Челюскинцев, 19"
+            description = "Аптека Живика"
+            address = "Улица Челюскинцев, 19"
         },
         BtDevice(
             rssi = -55,
@@ -74,7 +75,8 @@ class MockBtRepository : BtRepository() {
                 set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
-            description = "Остановка трамвая. Ж/д вокзал"
+            description = "Остановка трамвая"
+            address = "Ж/д вокзал"
         },
         BtDevice(
             rssi = -59,
@@ -108,7 +110,8 @@ class MockBtRepository : BtRepository() {
                 set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
-            description = "Супермаркет Пятёрочка. Челюскинцев, 23"
+            description = "Супермаркет Пятёрочка"
+            address = "Челюскинцев, 23"
         },
         BtDevice(
             rssi = -63,
