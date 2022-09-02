@@ -2,9 +2,9 @@
 
 package com.alfasreda.mobilecity.repositories.bt
 
-import com.alfasreda.mobilecity.models.*
+import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.models.mockBytes
 import kotlinx.coroutines.*
-import kotlin.random.Random
 
 class MockBtRepository : BtRepository() {
 
@@ -39,9 +39,10 @@ class MockBtRepository : BtRepository() {
                 withContext(Dispatchers.Main) {
                     devices.forEach { device ->
                         delay(200)
-                        listener.onLeScan(device.apply {
-                            this.updateRSSI(-(40..75).random())
-                        })
+                        listener.onLeScan(
+                            device.apply {
+                                rssi = -(40..75).random()
+                            })
                     }
                 }
             }

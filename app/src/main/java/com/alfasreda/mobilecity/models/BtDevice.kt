@@ -5,14 +5,11 @@ package com.alfasreda.mobilecity.models
 import android.bluetooth.BluetoothDevice
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.MutableLiveData
 import com.alfasreda.mobilecity.BuildConfig
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlin.math.abs
 
 data class BtDevice(
     val device: BluetoothDevice? = null,
-    val rssi: Int,
+    var rssi: Int,
     var bytes: ByteArray?
 ) {
 
@@ -71,54 +68,40 @@ data class BtDevice(
     private var handler: Handler = Handler(Looper.getMainLooper())
 
     fun call() {
-        when {
-            type == CITY_OBJECT -> {
+        when (type) {
+            CITY_OBJECT -> {
                 bytes?.let {
                     it[24] = 37.toByte()
-                    isCallLiveData.value = true
                 }
                 handler.postDelayed({
                     bytes?.let {
                         it[24] = 5.toByte()
-                        isCallLiveData.value = false
                     }
                 }, 30000)
             }
-            type == BUS || type == TROLLEYBUS || type == TRAM -> {
+            BUS, TROLLEYBUS, TRAM -> {
                 bytes?.let {
                     it[24] = 27.toByte()
-                    isCallLiveData.value = true
                 }
                 handler.postDelayed({
                     bytes?.let {
                         it[24] = 7.toByte()
-                        isCallLiveData.value = false
                     }
                 }, 10000)
             }
         }
     }
 
-    val isCall: Boolean
-        get() {
-            return when(type) {
-                CITY_OBJECT -> bytes?.get(24) == 37.toByte()
-                TRANSPORT -> bytes?.get(24) == 27.toByte()
-                else -> false
-            }
+    fun isCall(): Boolean = when (type) {
+        CITY_OBJECT -> {
+            bytes?.get(24) == 37.toByte()
         }
-
-    val isCallLiveData = MutableLiveData(false).apply {
-        when(type) {
-            CITY_OBJECT -> value = bytes?.get(24) == 37.toByte()
-            TRANSPORT -> value = bytes?.get(24) == 27.toByte()
+        BUS, TROLLEYBUS, TRAM -> {
+            bytes?.get(24) == 27.toByte()
         }
+        else -> false
     }
 
-    val rssiLiveData = MutableStateFlow(0)
-    fun updateRSSI(rssi: Int) {
-        rssiLiveData.value = rssi
-    }
 
     override fun equals(other: Any?): Boolean {
         other as BtDevice

@@ -28,11 +28,11 @@ class MainViewModel(
         object BtIsOn: BtState()
         object BtIsOff: BtState()
         object NoBtPermission: BtState()
-        //data class NoPermission(val permission: String): BtState()
         data class PermissionDenied(val permission: String): BtState()
         object StartScan: BtState()
         data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
         data class ScanFailure(val errorCode: Int): BtState()
+        data class UpdateData(val device: BtDevice): BtState()
     }
 
     val btDevices = mutableSetOf<BtDevice>()
@@ -136,11 +136,12 @@ class MainViewModel(
                     }
                 }
                 else {
-                    btDevices.first {
+                    val btDevice = btDevices.first {
                         it.id == device.id
                     }.apply {
-                        this.updateRSSI(device.rssiLiveData.value)
+                        this.rssi = device.rssi
                     }
+                    _btState.value = BtState.UpdateData(btDevice)
                 }
             }
         })

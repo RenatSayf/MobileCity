@@ -18,7 +18,6 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.R
@@ -47,13 +46,9 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
         MainViewModel.Factory()
     })
 
-    private val pageAdapter: BtDevicePageAdapter by lazy {
-        BtDevicePageAdapter(viewLifecycleOwner, this)
-    }
+    private var pageAdapter: BtDevicePageAdapter? = null
 
-    private val listAdapter: BtDeviceListAdapter by lazy {
-        BtDeviceListAdapter(viewLifecycleOwner, this)
-    }
+    private var listAdapter: BtDeviceListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,13 +87,6 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                 titleContentDescription = "Это главный экран приложения"
                 )
 
-            rvList.apply {
-                adapter = listAdapter
-            }
-            vpList.apply {
-                adapter = pageAdapter
-            }
-
             includeAppBar.btnBackNavigation.setOnClickListener {
                 findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
             }
@@ -112,15 +100,11 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
             }
 
             btnCityObjects.setOnClickListener {
-                //mainVM.startAdvertising()
-                //mainVM.startBtScan()
                 speechVM.autoSpeak("Режим городские объекты")
                 mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
             }
 
             btnTransport.setOnClickListener {
-                //mainVM.startAdvertising()
-                //mainVM.startBtScan()
                 speechVM.autoSpeak("Режим транспорт")
                 mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
             }
@@ -172,14 +156,14 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                                 when(screenState.mode) {
                                     MainViewModel.DisplayMode.Page -> {
                                         if (filteredData.isNotEmpty()) {
-                                            pageAdapter.addItems(filteredData)
+                                            pageAdapter?.addItems(filteredData)
                                             showBtDeviceList(isList = false, isPage = true, isProgress = false, message = null)
                                         }
                                         else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
                                     }
                                     MainViewModel.DisplayMode.List -> {
                                         if (filteredData.isNotEmpty()) {
-                                            listAdapter.addItems(filteredData)
+                                            listAdapter?.addItems(filteredData)
                                             showBtDeviceList(isList = true, isPage = false, isProgress = false, message = null)
                                         }
                                         else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
@@ -193,14 +177,14 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                                 when(screenState.mode) {
                                     MainViewModel.DisplayMode.Page -> {
                                         if (filteredData.isNotEmpty()) {
-                                            pageAdapter.addItems(filteredData)
+                                            pageAdapter?.addItems(filteredData)
                                             showBtDeviceList(isList = false, isPage = true, isProgress = false, message = null)
                                         }
                                         else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
                                     }
                                     MainViewModel.DisplayMode.List -> {
                                         if (filteredData.isNotEmpty()) {
-                                            listAdapter.addItems(filteredData)
+                                            listAdapter?.addItems(filteredData)
                                             showBtDeviceList(isList = true, isPage = false, isProgress = false, message = null)
                                         }
                                         else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
@@ -241,6 +225,10 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                             style(R.style.AppButton)
                         }
                     }
+                    is MainViewModel.BtState.UpdateData -> {
+                        val device = state.device
+                        RxBus.sendDevice(device)
+                    }
                 }
             }
 
@@ -254,6 +242,16 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         speechVM.autoSpeak(message)
                     }
                     is MainViewModel.ScreenState.CityMode -> {
+                        when(state.mode) {
+                            MainViewModel.DisplayMode.Page -> {
+                                pageAdapter = BtDevicePageAdapter(listener = this@MainFragment)
+                                vpList.adapter = pageAdapter
+                            }
+                            MainViewModel.DisplayMode.List -> {
+                                listAdapter = BtDeviceListAdapter(listener = this@MainFragment)
+                                rvList.adapter = listAdapter
+                            }
+                        }
                         mainVM.startBtScan()
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
                         btnCityObjects.apply {
@@ -268,6 +266,16 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
                     is MainViewModel.ScreenState.TransportMode -> {
+                        when(state.mode) {
+                            MainViewModel.DisplayMode.Page -> {
+                                pageAdapter = BtDevicePageAdapter(listener = this@MainFragment)
+                                vpList.adapter = pageAdapter
+                            }
+                            MainViewModel.DisplayMode.List -> {
+                                listAdapter = BtDeviceListAdapter(listener = this@MainFragment)
+                                rvList.adapter = listAdapter
+                            }
+                        }
                         mainVM.startBtScan()
                         showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
                         btnCityObjects.apply {
