@@ -24,10 +24,11 @@ private const val CITY_OBJECT = 0
 private const val TRANSPORT = 1
 
 class BtDeviceListAdapter(
-    private val listener: Listener
+    private val listener: IBtDevicesAdapterListener
     ) : ListAdapter<BtDevice, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     private var devices = mutableListOf<BtDevice>()
+    private var timerToDelete: CountDownTimer? = null
 
     val composite = CompositeDisposable()
 
@@ -76,10 +77,10 @@ class BtDeviceListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder) {
             is CityObjectViewHolder -> {
-                holder.bind(devices[position])
+                holder.bind(devices[position], position)
             }
             is TransportViewHolder -> {
-                holder.bind(devices[position])
+                holder.bind(devices[position], position)
             }
         }
     }
@@ -88,13 +89,49 @@ class BtDeviceListAdapter(
         return devices.size
     }
 
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+
+        if (!composite.isDisposed) {
+            composite.dispose()
+            composite.clear()
+        }
+        timerToDelete?.cancel()
+        super.onDetachedFromRecyclerView(recyclerView)
+    }
+
+    private fun setTimerToDelete(position: Int = -1): CountDownTimer {
+
+        val timer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                if (position >= 0) {
+                    try {
+                        devices.removeAt(position)
+                        notifyItemRemoved(position)
+                        if (devices.isEmpty()) {
+                            listener.onEmptyAdapter()
+                        }
+                    } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) e.printStackTrace()
+                        cancel()
+                    }
+                }
+            }
+        }
+        return timer
+    }
+
+
+
     inner class CityObjectViewHolder(private val binding: ItemObjectToListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         private var positionIndex: Int = -1
 
-        fun bind(device: BtDevice) {
+        fun bind(device: BtDevice, position: Int) {
             with(binding) {
 
+                positionIndex = position
                 tvObjectName.apply {
                     text = device.description
                     contentDescription = device.description
@@ -111,16 +148,17 @@ class BtDeviceListAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
+                timerToDelete = setTimerToDelete(positionIndex)
                 composite.add(
                     RxBus.toObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
-                            countDownTimer.start()
+                            timerToDelete?.start()
                             if (device.id == it.id) {
                                 val value = "${it.rssi} dB"
                                 tvRssiValue.text = value
-                                countDownTimer.cancel()
+                                timerToDelete?.cancel()
 
                                 if (it.isCall()) {
                                     layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
@@ -135,29 +173,16 @@ class BtDeviceListAdapter(
             }
         }
 
-        private val countDownTimer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-
-            override fun onFinish() {
-                if (positionIndex >= 0) {
-                    try {
-                        devices.removeAt(positionIndex)
-                        notifyItemRemoved(positionIndex)
-                    } catch (e: Exception) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
-                    }
-                }
-            }
-        }
     }
 
     inner class TransportViewHolder(private val binding: ItemTransportToListBinding) : RecyclerView.ViewHolder(binding.root) {
 
         private var positionIndex: Int = -1
 
-        fun bind(device: BtDevice) {
+        fun bind(device: BtDevice, position: Int) {
             with(binding) {
 
+                positionIndex = position
                 val type = device.type
                 when(type) {
                     BtDevice.BUS -> {
@@ -190,16 +215,17 @@ class BtDeviceListAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
+                timerToDelete = setTimerToDelete(positionIndex)
                 composite.add(
                     RxBus.toObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
-                            countDownTimer.start()
+                            timerToDelete?.start()
                             if (device.id == it.id) {
                                 val value = "${it.rssi} dB"
                                 tvRssiValue.text = value
-                                countDownTimer.cancel()
+                                timerToDelete?.cancel()
 
                                 if (it.isCall()) {
                                     layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
@@ -215,25 +241,7 @@ class BtDeviceListAdapter(
             }
         }
 
-        private val countDownTimer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-
-            override fun onFinish() {
-                if (positionIndex >= 0) {
-                    try {
-                        devices.removeAt(positionIndex)
-                        notifyItemRemoved(positionIndex)
-                    } catch (e: Exception) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
-                    }
-                }
-            }
-        }
     }
 
-    interface Listener {
-        fun onAdapterBtnCallClick(device: BtDevice)
-        fun onAdapterItemLongClick(description: String)
-        fun onAdapterItemsAdded(count: Int)
-    }
+
 }

@@ -33,6 +33,7 @@ class MainViewModel(
         data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
         data class ScanFailure(val errorCode: Int): BtState()
         data class UpdateData(val device: BtDevice): BtState()
+        object EmptyData: BtState()
     }
 
     val btDevices = mutableSetOf<BtDevice>()

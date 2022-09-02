@@ -25,6 +25,7 @@ import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceListAdapter
 import com.alfasreda.mobilecity.ui.main.adapters.BtDevicePageAdapter
+import com.alfasreda.mobilecity.ui.main.adapters.IBtDevicesAdapterListener
 import com.alfasreda.mobilecity.ui.splash.KEY_FIRST_RUN
 import com.alfasreda.mobilecity.utils.*
 import com.fondesa.kpermissions.allGranted
@@ -32,7 +33,7 @@ import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
 
 
-class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapter.Listener {
+class MainFragment : Fragment(), IBtDevicesAdapterListener {
 
     companion object {
         const val ARG_SPEECH = "ARG_SPEECH"
@@ -228,6 +229,11 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
                     is MainViewModel.BtState.UpdateData -> {
                         val device = state.device
                         RxBus.sendDevice(device)
+                    }
+                    MainViewModel.BtState.EmptyData -> {
+                        val message = getString(R.string.no_visible_objects)
+                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
+                        speechVM.autoSpeak(message)
                     }
                 }
             }
@@ -448,6 +454,10 @@ class MainFragment : Fragment(), BtDevicePageAdapter.Listener, BtDeviceListAdapt
     override fun onAdapterItemsAdded(count: Int) {
 
         speechVM.autoSpeak("Видимых объектов $count")
+    }
+
+    override fun onEmptyAdapter() {
+        mainVM.setBtState(MainViewModel.BtState.EmptyData)
     }
 
 

@@ -24,12 +24,13 @@ private const val CITY_OBJECT = 0
 private const val TRANSPORT = 1
 
 class BtDevicePageAdapter(
-    private val listener: Listener
+    private val listener: IBtDevicesAdapterListener
 ) : ListAdapter<BtDevice, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     private var devices = mutableListOf<BtDevice>()
 
-    val composite = CompositeDisposable()
+    private val composite = CompositeDisposable()
+    private var timerToDelete: CountDownTimer? = null
 
     fun addItems(list: List<BtDevice>) {
 
@@ -116,7 +117,31 @@ class BtDevicePageAdapter(
             composite.dispose()
             composite.clear()
         }
+        timerToDelete?.cancel()
         super.onDetachedFromRecyclerView(recyclerView)
+    }
+
+    private fun setTimerToDelete(position: Int = -1): CountDownTimer {
+
+        val timer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                if (position >= 0) {
+                    try {
+                        devices.removeAt(position)
+                        notifyItemRemoved(position)
+                        if (devices.isEmpty()) {
+                            listener.onEmptyAdapter()
+                        }
+                    } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) e.printStackTrace()
+                        cancel()
+                    }
+                }
+            }
+        }
+        return timer
     }
 
 
@@ -151,16 +176,18 @@ class BtDevicePageAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
+                timerToDelete = setTimerToDelete(positionIndex)
                 composite.add(
                     RxBus.toObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
-                            countDownTimer.start()
+
+                            timerToDelete?.start()
                             if (device.id == it.id) {
                                 val value = "${it.rssi} dB"
                                 tvRssiValue.text = value
-                                countDownTimer.cancel()
+                                timerToDelete?.cancel()
 
                                 if (it.isCall()) {
                                     layoutItem.setBackgroundColor(
@@ -185,21 +212,6 @@ class BtDevicePageAdapter(
             }
         }
 
-        private val countDownTimer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-
-            override fun onFinish() {
-                if (positionIndex >= 0) {
-                    try {
-                        devices.removeAt(positionIndex)
-                        notifyItemRemoved(positionIndex)
-                    } catch (e: Exception) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
-                    }
-                }
-            }
-        }
-
     }
 
     inner class TransportViewHolder(private val binding: ItemTransportToPageBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -209,6 +221,7 @@ class BtDevicePageAdapter(
         fun bind(device: BtDevice, position: Int, count: Int) {
             with(binding) {
 
+                positionIndex = position
                 val itemCount = "${position + 1} / $count"
                 tvObjectsCount.text = itemCount
 
@@ -247,16 +260,18 @@ class BtDevicePageAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
+                timerToDelete = setTimerToDelete(positionIndex)
                 composite.add(
                     RxBus.toObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
-                            countDownTimer.start()
+
+                            timerToDelete?.start()
                             if (device.id == it.id) {
                                 val value = "${it.rssi} dB"
                                 tvRssiValue.text = value
-                                countDownTimer.cancel()
+                                timerToDelete?.cancel()
 
                                 if (it.isCall()) {
                                     layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
@@ -272,28 +287,7 @@ class BtDevicePageAdapter(
             }
         }
 
-        private val countDownTimer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-
-            override fun onFinish() {
-                if (positionIndex >= 0) {
-                    try {
-                        devices.removeAt(positionIndex)
-                        notifyItemRemoved(positionIndex)
-                    } catch (e: Exception) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
-                    }
-                }
-            }
-        }
     }
 
-    interface Listener {
-        fun onAdapterPreviousBtnClick(position: Int)
-        fun onAdapterNextBtnClick(position: Int)
-        fun onAdapterBtnCallClick(device: BtDevice)
-        fun onAdapterItemLongClick(description: String)
-        fun onAdapterItemAttached(description: String)
-        fun onAdapterItemsAdded(count: Int)
-    }
+
 }
