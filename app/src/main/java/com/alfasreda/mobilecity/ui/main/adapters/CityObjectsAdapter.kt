@@ -12,27 +12,7 @@ class CityObjectsAdapter(
     private val listener: IBtDevicesAdapterListener
 ) : ListAdapter<BtDevice, CityObjectsAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-    private var devices = mutableListOf<BtDevice>()
     private var positionIndex: Int = -1
-
-    fun addItems(list: List<BtDevice>) {
-
-        if (devices != list) {
-            listener.onAdapterItemsAdded(list.size)
-        }
-        devices = list.toMutableList()
-        notifyDataSetChanged()
-
-    }
-
-    fun clear() {
-        devices.clear()
-        notifyDataSetChanged()
-    }
-
-    override fun getItemCount(): Int {
-        return devices.size
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemToGridBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -40,7 +20,7 @@ class CityObjectsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(devices[position], position, devices.size)
+        holder.bind(getItem(position), position, itemCount)
     }
 
 

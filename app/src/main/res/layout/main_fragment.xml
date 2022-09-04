@@ -60,20 +60,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/btn_city_objects"
+            app:layout_constraintBottom_toTopOf="@+id/filter_container"
             app:layout_constraintVertical_bias="0">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/vp_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/item_object_to_page"
-                tools:itemCount="5"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-            </androidx.viewpager2.widget.ViewPager2>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_list"
@@ -116,6 +104,7 @@
         </FrameLayout>
 
         <FrameLayout
+            android:id="@+id/filter_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/content_container"
@@ -128,41 +117,6 @@
                 android:id="@+id/include_radio_group"
                 layout="@layout/objects_filter_layout" />
         </FrameLayout>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_city_objects"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/content_container"
-            app:layout_constraintEnd_toStartOf="@+id/btn_transport"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="1"
-            android:layout_marginTop="16dp"
-            android:padding="16dp"
-            android:layout_marginEnd="4dp"
-            android:drawableTop="@drawable/ic_home_white"
-            android:text="Объекты"
-            style="@style/AppButton"
-            android:contentDescription="Отслеживание городской инфраструктуры"
-            android:visibility="gone"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_transport"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/btn_city_objects"
-            app:layout_constraintTop_toBottomOf="@+id/content_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="1"
-            android:padding="16dp"
-            android:layout_marginStart="4dp"
-            android:drawableTop="@drawable/ic_bus_white"
-            android:text="Транспорт"
-            style="@style/AppButton"
-            android:contentDescription="Отслеживание транспорта"
-            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

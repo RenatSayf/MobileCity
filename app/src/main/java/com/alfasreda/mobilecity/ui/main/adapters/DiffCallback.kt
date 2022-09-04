@@ -5,10 +5,11 @@ import com.alfasreda.mobilecity.models.BtDevice
 
 val DIFF_CALLBACK = object : DiffUtil.ItemCallback<BtDevice>() {
     override fun areItemsTheSame(oldItem: BtDevice, newItem: BtDevice): Boolean {
-        return oldItem == newItem
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: BtDevice, newItem: BtDevice): Boolean {
-        return oldItem == newItem
+        return oldItem.id.contentEquals(newItem.id
+        )
     }
 }

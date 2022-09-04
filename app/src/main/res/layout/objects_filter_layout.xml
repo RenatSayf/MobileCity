@@ -25,11 +25,12 @@
             android:gravity="center"
             android:padding="8dp"
             android:layout_margin="2dp"
-            android:checked="true"
+            android:checked="false"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:drawableTop="@drawable/ic_business_white"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            />
 
         <RadioButton
             android:id="@+id/btn_all"

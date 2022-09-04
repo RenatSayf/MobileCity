@@ -11,6 +11,7 @@ import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -18,13 +19,12 @@ import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import com.airbnb.paris.extensions.style
-import com.alfasreda.mobilecity.BuildConfig
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.alfasreda.mobilecity.models.BtDevice
-import com.alfasreda.mobilecity.ui.main.adapters.BtDeviceListAdapter
-import com.alfasreda.mobilecity.ui.main.adapters.BtDevicePageAdapter
+import com.alfasreda.mobilecity.ui.main.adapters.CityObjectsAdapter
 import com.alfasreda.mobilecity.ui.main.adapters.IBtDevicesAdapterListener
 import com.alfasreda.mobilecity.ui.splash.KEY_FIRST_RUN
 import com.alfasreda.mobilecity.utils.*
@@ -47,9 +47,9 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         MainViewModel.Factory()
     })
 
-    private var pageAdapter: BtDevicePageAdapter? = null
-
-    private var listAdapter: BtDeviceListAdapter? = null
+    private val objectsAdapter: CityObjectsAdapter by lazy {
+        CityObjectsAdapter(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -88,6 +88,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                 titleContentDescription = "Это главный экран приложения"
                 )
 
+            rvList.adapter = objectsAdapter
+
             includeAppBar.btnBackNavigation.setOnClickListener {
                 findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
             }
@@ -97,18 +99,28 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
             }
 
             btnToPage.setOnClickListener {
-                mainVM.setDisplayMode(MainViewModel.DisplayMode.Page)
+                mainVM.setDisplayMode(MainViewModel.DisplayMode.Grid)
             }
 
-            includeRadioGroup.btnObjects.setOnClickListener {
-                speechVM.autoSpeak("Режим городские объекты")
-                mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
-            }
+            includeRadioGroup.rgFilter.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
 
-            includeRadioGroup.btnTransport.setOnClickListener {
-                speechVM.autoSpeak("Режим транспорт")
-                mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
-            }
+                override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+                    when (checkedId) {
+                        R.id.btn_all -> {
+                            speechVM.autoSpeak("Режим любые объекты")
+                            mainVM.setScreenState(MainViewModel.ScreenState.AllObjectsMode(mainVM.getDisplayMode()))
+                        }
+                        R.id.btn_objects -> {
+                            speechVM.autoSpeak("Режим городские объекты")
+                            mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
+                        }
+                        R.id.btn_transport -> {
+                            speechVM.autoSpeak("Режим транспорт")
+                            mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
+                        }
+                    }
+                }
+            })
 
             tvMessage.setOnClickListener {
                 if (mainVM.btState.value == MainViewModel.BtState.PermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -122,23 +134,28 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
 
                 when (state) {
                     MainViewModel.BtState.BtIsOff -> {
+                        mainVM.setScreenState(MainViewModel.ScreenState.Disable)
                         val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                         startActivityForResult(enableBtIntent, 1111)
                     }
                     MainViewModel.BtState.BtIsOn -> {
-//                        binding.btnCityObjects.isEnabled = true
-//                        binding.btnTransport.isEnabled = true
-                        mainVM.setScreenState(MainViewModel.ScreenState.NothingMode)
+
+                       with(includeRadioGroup) {
+                           rgFilter.visibility = View.VISIBLE
+                       }
+                        mainVM.setScreenState(MainViewModel.ScreenState.Init)
+                        mainVM.startBtScan()
                     }
                     MainViewModel.BtState.NotSupportBT -> {
                         val message = "Устройство не поддерживает блютуз"
                         speechVM.autoSpeak(message)
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
+                        showBtDeviceList(isList = false, isProgress = false, message = message)
+                        mainVM.setScreenState(MainViewModel.ScreenState.Disable)
                     }
                     MainViewModel.BtState.NoBtPermission -> {
                         val message = "Для работы приложения требуется включение блютуз. Нажмите что бы продолжить."
                         speechVM.autoSpeak(message)
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
+                        showBtDeviceList(isList = false, isProgress = false, message = message)
                     }
                     is MainViewModel.BtState.ScanFailure -> {
                         progressBar.visibility = View.GONE
@@ -146,28 +163,79 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     }
                     is MainViewModel.BtState.ScanSuccess -> {
-                        progressBar.visibility = View.GONE
+                        //showBtDeviceList(isList = true, isProgress = false, message = null)
                         val data = state.data.toList()
                         val screenState = mainVM.screenState.value
+
                         when(screenState) {
+                            is MainViewModel.ScreenState.AllObjectsMode -> {
+                                when(screenState.mode) {
+                                    MainViewModel.DisplayMode.Grid -> {
+                                        if (data.isNotEmpty()) {
+                                            objectsAdapter.submitList(data)
+                                            showBtDeviceList(
+                                                isList = true,
+                                                isProgress = false,
+                                                message = null
+                                            )
+                                        }
+                                        else showBtDeviceList(
+                                            isList = false,
+                                            isProgress = false,
+                                            message = getString(R.string.no_visible_objects)
+                                        )
+                                    }
+                                    MainViewModel.DisplayMode.List -> {
+                                        if (data.isNotEmpty()) {
+                                            objectsAdapter.submitList(data)
+                                            showBtDeviceList(
+                                                isList = true,
+                                                isProgress = false,
+                                                message = null
+                                            )
+                                        }
+                                        else showBtDeviceList(
+                                            isList = false,
+                                            isProgress = false,
+                                            message = getString(R.string.no_visible_objects)
+                                        )
+                                    }
+                                }
+                            }
                             is MainViewModel.ScreenState.CityMode -> {
                                 val filteredData = data.filter {
                                     it.type == BtDevice.CITY_OBJECT
                                 }
                                 when(screenState.mode) {
-                                    MainViewModel.DisplayMode.Page -> {
+                                    MainViewModel.DisplayMode.Grid -> {
                                         if (filteredData.isNotEmpty()) {
-                                            pageAdapter?.addItems(filteredData)
-                                            showBtDeviceList(isList = false, isPage = true, isProgress = false, message = null)
+                                            objectsAdapter.submitList(filteredData)
+                                            showBtDeviceList(
+                                                isList = true,
+                                                isProgress = false,
+                                                message = null
+                                            )
                                         }
-                                        else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
+                                        else showBtDeviceList(
+                                            isList = false,
+                                            isProgress = false,
+                                            message = getString(R.string.no_visible_objects)
+                                        )
                                     }
                                     MainViewModel.DisplayMode.List -> {
                                         if (filteredData.isNotEmpty()) {
-                                            listAdapter?.addItems(filteredData)
-                                            showBtDeviceList(isList = true, isPage = false, isProgress = false, message = null)
+                                            objectsAdapter.submitList(filteredData)
+                                            showBtDeviceList(
+                                                isList = true,
+                                                isProgress = false,
+                                                message = null
+                                            )
                                         }
-                                        else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
+                                        else showBtDeviceList(
+                                            isList = false,
+                                            isProgress = false,
+                                            message = getString(R.string.no_visible_objects)
+                                        )
                                     }
                                 }
                             }
@@ -176,19 +244,35 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                                     it.type == BtDevice.BUS || it.type == BtDevice.TROLLEYBUS || it.type == BtDevice.TRAM
                                 }
                                 when(screenState.mode) {
-                                    MainViewModel.DisplayMode.Page -> {
+                                    MainViewModel.DisplayMode.Grid -> {
                                         if (filteredData.isNotEmpty()) {
-                                            pageAdapter?.addItems(filteredData)
-                                            showBtDeviceList(isList = false, isPage = true, isProgress = false, message = null)
+                                            objectsAdapter.submitList(filteredData)
+                                            showBtDeviceList(
+                                                isList = true,
+                                                isProgress = false,
+                                                message = null
+                                            )
                                         }
-                                        else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
+                                        else showBtDeviceList(
+                                            isList = false,
+                                            isProgress = false,
+                                            message = getString(R.string.no_visible_objects)
+                                        )
                                     }
                                     MainViewModel.DisplayMode.List -> {
                                         if (filteredData.isNotEmpty()) {
-                                            listAdapter?.addItems(filteredData)
-                                            showBtDeviceList(isList = true, isPage = false, isProgress = false, message = null)
+                                            objectsAdapter.submitList(filteredData)
+                                            showBtDeviceList(
+                                                isList = true,
+                                                isProgress = false,
+                                                message = null
+                                            )
                                         }
-                                        else showBtDeviceList(isList = false, isPage = false, isProgress = false, message = getString(R.string.no_visible_objects))
+                                        else showBtDeviceList(
+                                            isList = false,
+                                            isProgress = false,
+                                            message = getString(R.string.no_visible_objects)
+                                        )
                                     }
                                 }
                             }
@@ -196,8 +280,6 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         }
                     }
                     MainViewModel.BtState.NoLocationPermission -> {
-//                        binding.btnCityObjects.isEnabled = false
-//                        binding.btnTransport.isEnabled = false
                         permissionsBuilder(Manifest.permission.ACCESS_FINE_LOCATION).build().send(){ result ->
                             if (result.allGranted()) {
                                 mainVM.initBluetooth()
@@ -214,17 +296,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     }
                     is MainViewModel.BtState.PermissionDenied -> {
                         val message = "Для работы приложения требуется доступ к данным о местоположении устройства."
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
-//                        btnCityObjects.apply {
-//                            isSelected = false
-//                            isEnabled = false
-//                            style(R.style.AppButton)
-//                        }
-//                        btnTransport.apply {
-//                            isSelected = false
-//                            isEnabled = false
-//                            style(R.style.AppButton)
-//                        }
+                        showBtDeviceList(isList = false, isProgress = false, message = message)
                     }
                     is MainViewModel.BtState.UpdateData -> {
                         val device = state.device
@@ -232,71 +304,35 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     }
                     MainViewModel.BtState.EmptyData -> {
                         val message = getString(R.string.no_visible_objects)
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
+                        showBtDeviceList(isList = false, isProgress = false, message = message)
                         speechVM.autoSpeak(message)
                     }
                 }
             }
 
             mainVM.screenState.observe(viewLifecycleOwner) { state ->
-                when(state) {
-                    MainViewModel.ScreenState.NothingMode -> {
-//                        btnCityObjects.style(R.style.AppButton)
-//                        btnTransport.style(R.style.AppButton)
-                        val message = "Выберите режим обнаружения статических объектов или транспорта, нажав на соответствующие кнопки внизу экрана"
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = message)
-                        speechVM.autoSpeak(message)
-                    }
-                    is MainViewModel.ScreenState.CityMode -> {
-                        when(state.mode) {
-                            MainViewModel.DisplayMode.Page -> {
-                                pageAdapter = BtDevicePageAdapter(listener = this@MainFragment)
-                                vpList.adapter = pageAdapter
-                            }
-                            MainViewModel.DisplayMode.List -> {
-                                listAdapter = BtDeviceListAdapter(listener = this@MainFragment)
-                                rvList.adapter = listAdapter
-                            }
-                        }
-                        mainVM.startBtScan()
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
-//                        btnCityObjects.apply {
-//                            isSelected = true
-//                            style(R.style.AppButtonSelected)
-//                        }
-//                        btnTransport.apply {
-//                            isSelected = false
-//                            style(R.style.AppButton)
-//                        }
-                        displayDeviceList(state.mode)
-                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
-                    }
-                    is MainViewModel.ScreenState.TransportMode -> {
-                        when(state.mode) {
-                            MainViewModel.DisplayMode.Page -> {
-                                pageAdapter = BtDevicePageAdapter(listener = this@MainFragment)
-                                vpList.adapter = pageAdapter
-                            }
-                            MainViewModel.DisplayMode.List -> {
-                                listAdapter = BtDeviceListAdapter(listener = this@MainFragment)
-                                rvList.adapter = listAdapter
-                            }
-                        }
-                        mainVM.startBtScan()
-                        showBtDeviceList(isList = false, isPage = false, isProgress = false, message = "Поиск объектов...")
-//                        btnCityObjects.apply {
-//                            isSelected = false
-//                            style(R.style.AppButton)
-//                        }
-//                        btnTransport.apply {
-//                            isSelected = true
-//                            style(R.style.AppButtonSelected)
-//                        }
-                        displayDeviceList(state.mode)
-                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
-                    }
-                    MainViewModel.ScreenState.Init -> {
 
+                when(state) {
+                    MainViewModel.ScreenState.Init -> {
+                        showBtDeviceList(
+                            isList = false,
+                            isProgress = false,
+                            message = "Поиск объектов..."
+                        )
+                        includeRadioGroup.rgFilter.check(R.id.btn_all)
+                        mainVM.setScreenState(MainViewModel.ScreenState.AllObjectsMode(mainVM.getDisplayMode()))
+                    }
+                    MainViewModel.ScreenState.Disable -> {
+                        includeRadioGroup.rgFilter.visibility = View.GONE
+                        btnToPage.visibility = View.GONE
+                        btnToList.visibility = View.GONE
+                        btnToList.visibility = View.GONE
+                    }
+                    else -> {
+                        displayDeviceList(mainVM.getDisplayMode())
+                        if (mainVM.btDevices.isNotEmpty()) {
+                            mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
+                        }
                     }
                 }
             }
@@ -309,32 +345,21 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         with(binding) {
 
             when(mode) {
-                MainViewModel.DisplayMode.Page -> {
+                MainViewModel.DisplayMode.Grid -> {
                     btnToList.visibility = View.VISIBLE
                     btnToPage.visibility = View.GONE
-                    vpList.apply {
-                        visibility = View.VISIBLE
-                    }
-                    rvList.visibility = View.GONE
+                    rvList.layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
                 }
                 MainViewModel.DisplayMode.List -> {
                     btnToList.visibility = View.GONE
                     btnToPage.visibility = View.VISIBLE
-                    rvList.apply {
-                        visibility = View.VISIBLE
-                    }
-                    vpList.visibility = View.GONE
+                    rvList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 }
             }
         }
     }
 
-    private fun showBtDeviceList(
-        isList: Boolean,
-        isPage: Boolean,
-        isProgress: Boolean,
-        message: String?
-    ) {
+    private fun showBtDeviceList(isList: Boolean, isProgress: Boolean, message: String?) {
         with(binding) {
 
             if (message.isNullOrEmpty()) {
@@ -345,7 +370,6 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                 visibility = View.VISIBLE
             }
             if (isList) rvList.visibility = View.VISIBLE else rvList.visibility = View.GONE
-            if (isPage) vpList.visibility = View.VISIBLE else vpList.visibility = View.GONE
             if (isProgress) progressBar.visibility = View.VISIBLE else progressBar.visibility = View.GONE
         }
     }
@@ -404,19 +428,11 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
     }
 
     override fun onAdapterPreviousBtnClick(position: Int) {
-        try {
-            binding.vpList.setCurrentItem(position - 1, false)
-        } catch (e: IndexOutOfBoundsException) {
-            if (BuildConfig.DEBUG) e.printStackTrace()
-        }
+
     }
 
     override fun onAdapterNextBtnClick(position: Int) {
-        try {
-            binding.vpList.setCurrentItem(position + 1, false)
-        } catch (e: IndexOutOfBoundsException) {
-            if (BuildConfig.DEBUG) e.printStackTrace()
-        }
+
     }
 
     override fun onAdapterBtnCallClick(device: BtDevice) {

@@ -45,13 +45,14 @@ class MainViewModel(
     }
 
     enum class DisplayMode {
-        Page, List
+        Grid, List
     }
     sealed class ScreenState {
         object Init: ScreenState()
-        object NothingMode: ScreenState()
+        data class AllObjectsMode(val mode: DisplayMode): ScreenState()
         data class CityMode(val mode: DisplayMode): ScreenState()
         data class TransportMode(val mode: DisplayMode): ScreenState()
+        object Disable: ScreenState()
     }
 
     private var _screenState = MutableLiveData<ScreenState>(ScreenState.Init)
@@ -68,21 +69,19 @@ class MainViewModel(
             is ScreenState.TransportMode -> {
                 _screenState.value = ScreenState.TransportMode(mode)
             }
-            else -> {
-                _screenState.value = ScreenState.NothingMode
+            is ScreenState.AllObjectsMode -> {
+                _screenState.value = ScreenState.AllObjectsMode(mode)
             }
+            else -> {}
         }
     }
 
     fun getDisplayMode(): DisplayMode {
         return when (val value = _screenState.value) {
-            is ScreenState.CityMode -> {
-                value.mode
-            }
-            is ScreenState.TransportMode -> {
-                value.mode
-            }
-            else -> DisplayMode.Page
+            is ScreenState.CityMode -> value.mode
+            is ScreenState.TransportMode -> value.mode
+            is ScreenState.AllObjectsMode -> value.mode
+            else -> DisplayMode.Grid
         }
     }
 
