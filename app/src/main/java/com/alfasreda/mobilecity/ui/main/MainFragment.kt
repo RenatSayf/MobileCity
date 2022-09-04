@@ -88,7 +88,10 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                 titleContentDescription = "Это главный экран приложения"
                 )
 
-            rvList.adapter = objectsAdapter
+            rvList.apply {
+                adapter = objectsAdapter
+                itemAnimator = null
+            }
 
             includeAppBar.btnBackNavigation.setOnClickListener {
                 findNavController().navigate(R.id.action_mainFragment_to_menuFragment)
@@ -300,7 +303,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     }
                     is MainViewModel.BtState.UpdateData -> {
                         val device = state.device
-                        RxBus.sendDevice(device)
+                        objectsAdapter.updateItem(device)
+                        //RxBus.sendDevice(device)
                     }
                     MainViewModel.BtState.EmptyData -> {
                         val message = getString(R.string.no_visible_objects)

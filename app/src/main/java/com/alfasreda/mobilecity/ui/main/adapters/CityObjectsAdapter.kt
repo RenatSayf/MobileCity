@@ -23,6 +23,18 @@ class CityObjectsAdapter(
         holder.bind(getItem(position), position, itemCount)
     }
 
+    fun updateItem(device: BtDevice) {
+        val btDevice = currentList.firstOrNull {
+            it.id == device.id
+        }.apply {
+            this?.rssi = device.rssi
+        }
+        if (btDevice != null) {
+            val position = currentList.indexOf(btDevice)
+            notifyItemChanged(position)
+        }
+    }
+
 
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -54,6 +66,8 @@ class CityObjectsAdapter(
                         btnCall.contentDescription = "Подать сигнал водителю"
                     }
                 }
+
+                tvRssiValue.text = "${device.rssi} dB"
 
                 layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
 
