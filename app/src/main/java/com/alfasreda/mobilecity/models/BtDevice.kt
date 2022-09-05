@@ -10,7 +10,8 @@ import com.alfasreda.mobilecity.BuildConfig
 data class BtDevice(
     val device: BluetoothDevice? = null,
     var rssi: Int,
-    var bytes: ByteArray?
+    var bytes: ByteArray?,
+    var lastUpdateTime: Long = System.currentTimeMillis()
 ) {
 
     companion object {

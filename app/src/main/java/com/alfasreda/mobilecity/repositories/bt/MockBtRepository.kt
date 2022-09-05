@@ -41,6 +41,7 @@ class MockBtRepository : BtRepository() {
                         delay(200)
                         listener.onLeScan(
                             device.apply {
+                                lastUpdateTime = System.currentTimeMillis()
                                 rssi = -(40..75).random()
                             })
                     }

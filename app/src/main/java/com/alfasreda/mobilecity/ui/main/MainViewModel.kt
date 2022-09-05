@@ -4,6 +4,7 @@ package com.alfasreda.mobilecity.ui.main
 
 import android.annotation.SuppressLint
 import android.bluetooth.le.AdvertiseSettings
+import android.os.CountDownTimer
 import androidx.lifecycle.*
 import com.alfasreda.mobilecity.di.BtRepositoryModule
 import com.alfasreda.mobilecity.models.BtDevice
@@ -166,9 +167,30 @@ class MainViewModel(
         }
     }
 
+    private var countDownTimer: CountDownTimer? = null
+
+    init {
+
+        countDownTimer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                btDevices.removeIf {
+                    System.currentTimeMillis() - it.lastUpdateTime > 5000
+                }
+                if (btDevices.isEmpty()) {
+                    _btState.value = BtState.EmptyData
+                }
+                countDownTimer?.start()
+            }
+        }
+        countDownTimer?.start()
+    }
+
     override fun onCleared() {
 
         btRepository.stopLowEnergyScan(null)
+        countDownTimer?.cancel()
 
         super.onCleared()
     }

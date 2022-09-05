@@ -435,7 +435,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
 
     override fun onPause() {
 
-        (binding.rvList.adapter as CityObjectsAdapter).resetRemovingTimers()
+        //(binding.rvList.adapter as CityObjectsAdapter).resetRemovingTimers()
         super.onPause()
     }
 
@@ -494,12 +494,6 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
     override fun onAdapterItemsAdded(count: Int) {
 
         speechVM.autoSpeak("Видимых объектов $count")
-    }
-
-    override fun onAdapterItemRemoved(device: BtDevice) {
-        mainVM.btDevices.removeIf {
-            it.id == device.id
-        }
     }
 
     override fun onEmptyAdapter() {
