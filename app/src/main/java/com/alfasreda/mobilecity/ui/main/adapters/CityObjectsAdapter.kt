@@ -5,16 +5,20 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.alfasreda.mobilecity.BuildConfig
+import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemToGridBinding
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.utils.appRingtone
 
 class CityObjectsAdapter(
     private val listener: IBtDevicesAdapterListener
 ) : ListAdapter<BtDevice, CityObjectsAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-    private var positionIndex: Int = -1
+    private val handlerList = mutableListOf<Handler>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemToGridBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -37,6 +41,18 @@ class CityObjectsAdapter(
         }
     }
 
+    override fun onCurrentListChanged(
+        previousList: MutableList<BtDevice>,
+        currentList: MutableList<BtDevice>
+    ) {
+        handlerList.forEach { handler ->
+            handler.removeCallbacksAndMessages(null)
+        }
+        if (handlerList.isNotEmpty()) {
+            handlerList.clear()
+        }
+    }
+
 
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -45,7 +61,6 @@ class CityObjectsAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(device: BtDevice, position: Int, count: Int) {
 
-            positionIndex = position
             with(binding) {
 
                 timerForRemoveItem?.removeCallbacksAndMessages(null)
@@ -77,8 +92,17 @@ class CityObjectsAdapter(
 
                 layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
 
+                if (device.isCall()) {
+                    layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
+                }
+                else {
+                    layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+                    itemView.context.appRingtone()?.stop()
+                }
+
                 layoutItem.setOnLongClickListener {
-                    listener.onAdapterItemLongClick(device.description)
+                    val description = "${tvObjectType.text}. ${tvAddress.text}"
+                    listener.onAdapterItemLongClick(description)
                     true
                 }
 
@@ -86,18 +110,25 @@ class CityObjectsAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
-                timerForRemoveItem = runTimerForRemoveItem(position)
+                timerForRemoveItem = runTimerToRemoveItem(position)
+                timerForRemoveItem?.let { handler ->
+                    handlerList.add(handler)
+                }
             }
         }
 
-        private fun runTimerForRemoveItem(position: Int): Handler {
+        private fun runTimerToRemoveItem(position: Int): Handler {
             return Handler(Looper.getMainLooper()).apply {
                 this.postDelayed({
-                    val list = currentList.toMutableList()
-                    list.removeAt(position)
-                    this@CityObjectsAdapter.submitList(list)
-                    if (list.isEmpty()) {
-                        listener.onEmptyAdapter()
+                    try {
+                        val list = currentList.toMutableList()
+                        list.removeAt(position)
+                        this@CityObjectsAdapter.submitList(list)
+                        if (list.isEmpty()) {
+                            listener.onEmptyAdapter()
+                        }
+                    } catch (e: IndexOutOfBoundsException) {
+                        if (BuildConfig.DEBUG) e.printStackTrace()
                     }
                 }, 5000)
             }
