@@ -490,6 +490,10 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         speechVM.autoSpeak("Видимых объектов $count")
     }
 
+    override fun onAdapterItemRemoved(device: BtDevice) {
+        mainVM.btDevices.remove(device)
+    }
+
     override fun onEmptyAdapter() {
         mainVM.setBtState(MainViewModel.BtState.EmptyData)
     }

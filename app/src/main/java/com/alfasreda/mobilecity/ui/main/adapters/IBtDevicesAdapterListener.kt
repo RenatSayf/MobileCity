@@ -9,5 +9,6 @@ interface IBtDevicesAdapterListener {
     fun onAdapterItemLongClick(description: String)
     fun onAdapterItemAttached(description: String)
     fun onAdapterItemsAdded(count: Int)
+    fun onAdapterItemRemoved(device: BtDevice)
     fun onEmptyAdapter()
 }

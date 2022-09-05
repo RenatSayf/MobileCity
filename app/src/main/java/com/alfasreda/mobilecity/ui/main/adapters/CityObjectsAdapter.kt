@@ -54,16 +54,17 @@ class CityObjectsAdapter(
     }
 
 
+
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private var timerForRemoveItem: Handler? = null
+        private var timerToRemoveItem: Handler? = null
 
         @SuppressLint("SetTextI18n")
         fun bind(device: BtDevice, position: Int, count: Int) {
 
             with(binding) {
 
-                timerForRemoveItem?.removeCallbacksAndMessages(null)
+                timerToRemoveItem?.removeCallbacksAndMessages(null)
 
                 when(device.type) {
                     BtDevice.CITY_OBJECT -> {
@@ -110,31 +111,40 @@ class CityObjectsAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
-                timerForRemoveItem = runTimerToRemoveItem(position)
-                timerForRemoveItem?.let { handler ->
+                timerToRemoveItem = runTimerToRemoveItem(position, object : IPostDelayedCallback {
+                    override fun onDelayed(position: Int) {
+                        try {
+                            val list = currentList.toMutableList()
+                            val removedDevice = list.removeAt(position)
+                            this@CityObjectsAdapter.submitList(list)
+                            if (list.isEmpty()) {
+                                listener.onEmptyAdapter()
+                            }
+                            listener.onAdapterItemRemoved(removedDevice)
+                        } catch (e: IndexOutOfBoundsException) {
+                            if (BuildConfig.DEBUG) e.printStackTrace()
+                        }
+                    }
+                })
+                timerToRemoveItem?.let { handler ->
                     handlerList.add(handler)
                 }
             }
         }
 
-        private fun runTimerToRemoveItem(position: Int): Handler {
+        private fun runTimerToRemoveItem(position: Int, callback: IPostDelayedCallback): Handler {
             return Handler(Looper.getMainLooper()).apply {
                 this.postDelayed({
-                    try {
-                        val list = currentList.toMutableList()
-                        list.removeAt(position)
-                        this@CityObjectsAdapter.submitList(list)
-                        if (list.isEmpty()) {
-                            listener.onEmptyAdapter()
-                        }
-                    } catch (e: IndexOutOfBoundsException) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
-                    }
+                    callback.onDelayed(position)
                 }, 5000)
             }
         }
 
 
+    }
+
+    interface IPostDelayedCallback {
+        fun onDelayed(position: Int)
     }
 
 }
