@@ -141,6 +141,7 @@ class MainViewModel(
                         it.id == device.id
                     }.apply {
                         this.rssi = device.rssi
+                        this.lastUpdateTime = device.lastUpdateTime
                     }
                     _btState.value = BtState.UpdateData(btDevice)
                 }
