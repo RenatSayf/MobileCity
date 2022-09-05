@@ -53,18 +53,29 @@ class CityObjectsAdapter(
         }
     }
 
+    fun resetRemovingTimers() {
+        handlerList.forEach { handler ->
+            handler.removeCallbacksAndMessages(null)
+        }
+        if (handlerList.isNotEmpty()) {
+            handlerList.clear()
+        }
+    }
+
 
 
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private var timerToRemoveItem: Handler? = null
+        private var handlerToRemoveItem: Handler? = null
 
         @SuppressLint("SetTextI18n")
         fun bind(device: BtDevice, position: Int, count: Int) {
 
             with(binding) {
 
-                timerToRemoveItem?.removeCallbacksAndMessages(null)
+                handlerToRemoveItem?.removeCallbacksAndMessages(null)
+                handlerList.remove(handlerToRemoveItem)
+                handlerToRemoveItem = null
 
                 when(device.type) {
                     BtDevice.CITY_OBJECT -> {
@@ -111,7 +122,7 @@ class CityObjectsAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
-                timerToRemoveItem = runTimerToRemoveItem(position, object : IPostDelayedCallback {
+                handlerToRemoveItem = runTimerToRemoveItem(position, object : IPostDelayedCallback {
                     override fun onDelayed(position: Int) {
                         try {
                             val list = currentList.toMutableList()
@@ -126,7 +137,7 @@ class CityObjectsAdapter(
                         }
                     }
                 })
-                timerToRemoveItem?.let { handler ->
+                handlerToRemoveItem?.let { handler ->
                     handlerList.add(handler)
                 }
             }

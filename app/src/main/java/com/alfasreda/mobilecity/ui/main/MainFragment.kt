@@ -433,6 +433,12 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         })
     }
 
+    override fun onPause() {
+
+        (binding.rvList.adapter as CityObjectsAdapter).resetRemovingTimers()
+        super.onPause()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
@@ -491,7 +497,9 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
     }
 
     override fun onAdapterItemRemoved(device: BtDevice) {
-        mainVM.btDevices.remove(device)
+        mainVM.btDevices.removeIf {
+            it.id == device.id
+        }
     }
 
     override fun onEmptyAdapter() {

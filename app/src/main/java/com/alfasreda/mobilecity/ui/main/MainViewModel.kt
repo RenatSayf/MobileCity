@@ -132,7 +132,7 @@ class MainViewModel(
                 if (!btDevices.contains(device)) {
                     btDevices.add(device)
                     viewModelScope.launch {
-                        _btState.value = BtState.ScanSuccess(btDevices)
+                        _btState.postValue(BtState.ScanSuccess(btDevices))
                     }
                 }
                 else {

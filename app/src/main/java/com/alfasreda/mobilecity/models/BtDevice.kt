@@ -111,6 +111,6 @@ data class BtDevice(
     }
 
     override fun hashCode(): Int {
-        return device?.address.hashCode()
+        return this.id.hashCode()
     }
 }
