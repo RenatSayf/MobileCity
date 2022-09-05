@@ -7,6 +7,9 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
@@ -50,6 +53,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
     private val objectsAdapter: CityObjectsAdapter by lazy {
         CityObjectsAdapter(this)
     }
+
+    private var scanHandler: Handler? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -166,7 +171,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     }
                     is MainViewModel.BtState.ScanSuccess -> {
-                        //showBtDeviceList(isList = true, isProgress = false, message = null)
+                        scanHandler?.removeCallbacksAndMessages(null)
                         val data = state.data.toList()
                         val screenState = mainVM.screenState.value
 
@@ -295,7 +300,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         }
                     }
                     MainViewModel.BtState.StartScan -> {
-                        progressBar.visibility = View.VISIBLE
+
+                        scanHandler = runScanTimer(mainVM)
                     }
                     is MainViewModel.BtState.PermissionDenied -> {
                         val message = "Для работы приложения требуется доступ к данным о местоположении устройства."
@@ -304,7 +310,6 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     is MainViewModel.BtState.UpdateData -> {
                         val device = state.device
                         objectsAdapter.updateItem(device)
-                        //RxBus.sendDevice(device)
                     }
                     MainViewModel.BtState.EmptyData -> {
                         val message = getString(R.string.no_visible_objects)
@@ -320,7 +325,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     MainViewModel.ScreenState.Init -> {
                         showBtDeviceList(
                             isList = false,
-                            isProgress = false,
+                            isProgress = true,
                             message = "Поиск объектов..."
                         )
                         includeRadioGroup.rgFilter.check(R.id.btn_all)
@@ -376,6 +381,15 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
             if (isList) rvList.visibility = View.VISIBLE else rvList.visibility = View.GONE
             if (isProgress) progressBar.visibility = View.VISIBLE else progressBar.visibility = View.GONE
         }
+    }
+
+    private fun runScanTimer(viewModel: MainViewModel): Handler {
+        val handler = Handler(Looper.getMainLooper()).apply {
+            postDelayed({
+                viewModel.setBtState(MainViewModel.BtState.EmptyData)
+            }, 5000)
+        }
+        return handler
     }
 
     override fun onResume() {
