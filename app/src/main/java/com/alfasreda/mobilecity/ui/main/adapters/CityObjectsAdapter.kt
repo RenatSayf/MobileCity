@@ -1,14 +1,12 @@
 package com.alfasreda.mobilecity.ui.main.adapters
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemToGridBinding
 import com.alfasreda.mobilecity.models.BtDevice
@@ -43,8 +41,6 @@ class CityObjectsAdapter(
 
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private var handlerToRemoveItem: Handler? = null
-
         @SuppressLint("SetTextI18n")
         fun bind(device: BtDevice, position: Int, count: Int) {
 
@@ -52,30 +48,32 @@ class CityObjectsAdapter(
 
                 when(device.type) {
                     BtDevice.CITY_OBJECT -> {
-                        tvObjectType.text = device.description
-                        tvAddress.text = device.address
+                        tvObjectType.text = device.objectDescription
+                        tvAddress.visibility = View.GONE
                         btnCall.contentDescription = "Найти вход"
+                        layoutItem.contentDescription = tvObjectType.text
                     }
                     BtDevice.BUS -> {
                         tvObjectType.text = "Автобус"
                         tvAddress.text = "Маршрут № ${device.route}"
                         btnCall.contentDescription = "Подать сигнал водителю"
+                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
                     }
                     BtDevice.TROLLEYBUS -> {
                         tvObjectType.text = "Троллейбус"
                         tvAddress.text = "Маршрут № ${device.route}"
                         btnCall.contentDescription = "Подать сигнал водителю"
+                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
                     }
                     BtDevice.TRAM -> {
                         tvObjectType.text = "Трамвай"
                         tvAddress.text = "Маршрут № ${device.route}"
                         btnCall.contentDescription = "Подать сигнал водителю"
+                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
                     }
                 }
 
                 tvRssiValue.text = "${device.rssi} dB"
-
-                layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
 
                 if (device.isCall()) {
                     layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))

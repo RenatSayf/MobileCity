@@ -5,7 +5,10 @@ package com.alfasreda.mobilecity.models
 import android.bluetooth.BluetoothDevice
 import android.os.Handler
 import android.os.Looper
+import android.provider.SyncStateContract
 import com.alfasreda.mobilecity.BuildConfig
+import com.alfasreda.mobilecity.utils.DataSource
+import com.alfasreda.mobilecity.utils.injectString
 
 data class BtDevice(
     val device: BluetoothDevice? = null,
@@ -26,6 +29,19 @@ data class BtDevice(
     }
 
     var description: String = ""
+
+    val objectDescription: String
+        get() {
+            return bytes?.copyOfRange(26, bytes?.size ?: 26)?.toString(charset("Windows-1251")) ?: "Неизвестный объект"
+        }
+
+    fun setObjectDescription(description: String) {
+        if (BuildConfig.DATA_SOURCE == DataSource.LOCALHOST) {
+            bytes = bytes?.injectString(description, 26, charset("Windows-1251"))
+        } else {
+            throw IllegalStateException("********** This function is only used in test mode (LOCALHOST) *******************")
+        }
+    }
 
     val id: String
         get() {

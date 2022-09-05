@@ -67,6 +67,7 @@ class MockBtRepository : BtRepository() {
         ).apply {
             description = "Аптека Живика"
             address = "Улица Челюскинцев, 19"
+            setObjectDescription("Аптека Живика\nУлица Челюскинцев, 19")
         },
         BtDevice(
             rssi = -55,
@@ -78,6 +79,7 @@ class MockBtRepository : BtRepository() {
         ).apply {
             description = "Остановка трамвая"
             address = "Ж/д вокзал"
+            setObjectDescription("Остановка трамвая\nЖ/д вокзал")
         },
         BtDevice(
             rssi = -59,
@@ -113,6 +115,7 @@ class MockBtRepository : BtRepository() {
         ).apply {
             description = "Супермаркет Пятёрочка"
             address = "Челюскинцев, 23"
+            setObjectDescription("Супермаркет Пятёрочка\nЧелюскинцев, 23")
         },
         BtDevice(
             rssi = -63,

@@ -4,15 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.media.Ringtone
-import android.media.RingtoneManager
-import android.net.Uri
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.alfasreda.mobilecity.databinding.ToolBarBinding
 import com.google.android.material.snackbar.Snackbar
-import java.io.File
+import java.nio.charset.Charset
 
 fun Context.checkPermission(permission: String): Boolean {
     return ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
@@ -101,5 +99,15 @@ fun Context.appRingtone(): Ringtone? {
 
 fun Fragment.appRingtone(): Ringtone? {
     return requireContext().appRingtone()
+}
+
+fun stringToByteArray(text: String): ByteArray {
+    return text.toByteArray(charset("Windows-1251"))
+}
+
+fun ByteArray.injectString(string: String, offsetIndex: Int, encoded: Charset): ByteArray {
+    val firstList = this.toMutableList().take(offsetIndex)
+    val secondList = string.toByteArray(encoded).toMutableList()
+    return (firstList + secondList).toByteArray()
 }
 
