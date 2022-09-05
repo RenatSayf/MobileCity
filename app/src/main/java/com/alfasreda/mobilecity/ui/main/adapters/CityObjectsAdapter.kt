@@ -1,6 +1,8 @@
 package com.alfasreda.mobilecity.ui.main.adapters
 
 import android.annotation.SuppressLint
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -38,11 +40,15 @@ class CityObjectsAdapter(
 
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
 
+        private var timerForRemoveItem: Handler? = null
+
         @SuppressLint("SetTextI18n")
         fun bind(device: BtDevice, position: Int, count: Int) {
 
             positionIndex = position
             with(binding) {
+
+                timerForRemoveItem?.removeCallbacksAndMessages(null)
 
                 when(device.type) {
                     BtDevice.CITY_OBJECT -> {
@@ -80,11 +86,24 @@ class CityObjectsAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
+                timerForRemoveItem = runTimerForRemoveItem(position)
+            }
+        }
+
+        private fun runTimerForRemoveItem(position: Int): Handler {
+            return Handler(Looper.getMainLooper()).apply {
+                this.postDelayed({
+                    val list = currentList.toMutableList()
+                    list.removeAt(position)
+                    this@CityObjectsAdapter.submitList(list)
+                    if (list.isEmpty()) {
+                        listener.onEmptyAdapter()
+                    }
+                }, 5000)
             }
         }
 
 
     }
-
 
 }
