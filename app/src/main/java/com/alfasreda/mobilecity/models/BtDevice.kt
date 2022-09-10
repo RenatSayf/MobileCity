@@ -29,17 +29,6 @@ data class BtDevice(
         const val TRAFFIC_LIGHT = "TRAFFIC_LIGHT"
     }
 
-    val isDoorOpen: Boolean
-        get() {
-            val bitString = bytes?.get(24)?.toString(2)
-            return try {
-                val bit = bitString?.get(bitString.length - 3)
-                bit == '1'
-            } catch (e: IndexOutOfBoundsException) {
-                false
-            }
-        }
-
     var description: String = ""
 
     val objectDescription: String
@@ -112,7 +101,7 @@ data class BtDevice(
             }
             BUS, TROLLEYBUS, TRAM -> {
                 bytes?.let {
-                    it[24] = 27.toByte()
+                    it[24] = 37.toByte() //TODO уточнить какое значение должно быть для признака "Вызов принят" (27 или 37)
                 }
                 handler.postDelayed({
                     bytes?.let {
@@ -125,14 +114,36 @@ data class BtDevice(
 
     fun isCall(): Boolean = when (type) {
         CITY_OBJECT -> {
-            bytes?.get(24) == 37.toByte()
+            val bitString = bytes?.get(24)?.toString(2)
+            try {
+                val bit = bitString?.get(bitString.length - 6)
+                bit == '1'
+            } catch (e: IndexOutOfBoundsException) {
+                false
+            }
         }
         BUS, TROLLEYBUS, TRAM -> {
-            bytes?.get(24) == 27.toByte()
+            val bitString = bytes?.get(24)?.toString(2)
+            try {
+                val bit = bitString?.get(bitString.length - 6)
+                bit == '1'
+            } catch (e: IndexOutOfBoundsException) {
+                false
+            }
         }
         else -> false
     }
 
+    val isDoorOpen: Boolean
+        get() {
+            val bitString = bytes?.get(24)?.toString(2)
+            return try {
+                val bit = bitString?.get(bitString.length - 3)
+                bit == '1'
+            } catch (e: IndexOutOfBoundsException) {
+                false
+            }
+        }
 
     override fun equals(other: Any?): Boolean {
         other as BtDevice

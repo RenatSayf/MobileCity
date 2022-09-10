@@ -47,4 +47,26 @@ class BtDeviceTest {
         val doorOpen = btDevice.isDoorOpen
         Assert.assertTrue(!doorOpen)
     }
+
+    @Test
+    fun isCall_false() {
+        val btDevice = btDeviceTransport.apply {
+            bytes = this.bytes?.clone().apply {
+                this!![24] = 7.toByte()
+            }
+        }
+        val isCall = btDevice.isCall()
+        Assert.assertTrue(!isCall)
+    }
+
+    @Test
+    fun isCall_true() {
+        val btDevice = btDeviceTransport.apply {
+            bytes = this.bytes?.clone().apply {
+                this!![24] = 37.toByte() //TODO уточнить какое значение должно быть для признака "Вызов принят"
+            }
+        }
+        val isCall = btDevice.isCall()
+        Assert.assertTrue(isCall)
+    }
 }
