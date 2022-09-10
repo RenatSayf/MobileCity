@@ -10,4 +10,5 @@ interface IBtDevicesAdapterListener {
     fun onAdapterItemAttached(description: String)
     fun onAdapterItemsAdded(count: Int)
     fun onEmptyAdapter()
+    fun onSignalReceived(device: BtDevice)
 }

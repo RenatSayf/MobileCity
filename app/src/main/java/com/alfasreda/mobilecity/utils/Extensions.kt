@@ -64,16 +64,6 @@ fun String.toUtf8ByteArray(): ByteArray {
     return this.toByteArray(Charsets.UTF_8)
 }
 
-fun sign(input: Long): Long {
-    return if (input < 0x8000000) input else input or 0x7ffffff.inv()
-}
-
-fun ltob(input: Byte): Long {
-    var r = input.toLong()
-    if (r < 0) r += 256
-    return r
-}
-
 val Context.appPref: SharedPreferences
     get() {
         return this.getSharedPreferences("APP_PREF", Context.MODE_PRIVATE)
@@ -110,4 +100,5 @@ fun ByteArray.injectString(string: String, offsetIndex: Int, encoded: Charset): 
     val secondList = string.toByteArray(encoded).toMutableList()
     return (firstList + secondList).toByteArray()
 }
+
 

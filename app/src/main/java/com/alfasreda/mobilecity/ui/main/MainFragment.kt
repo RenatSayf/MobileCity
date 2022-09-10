@@ -500,5 +500,11 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         mainVM.setBtState(MainViewModel.BtState.EmptyData)
     }
 
+    override fun onSignalReceived(device: BtDevice) {
+        if (device.isCall()) {
+            speechVM.speak("Вызов принят")
+        }
+    }
+
 
 }

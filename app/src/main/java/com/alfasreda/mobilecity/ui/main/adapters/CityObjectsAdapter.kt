@@ -55,21 +55,23 @@ class CityObjectsAdapter(
                     }
                     BtDevice.BUS -> {
                         tvObjectType.text = "Автобус"
-                        tvAddress.text = "Маршрут № ${device.route}"
-                        btnCall.contentDescription = "Подать сигнал водителю"
-                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
                     }
                     BtDevice.TROLLEYBUS -> {
                         tvObjectType.text = "Троллейбус"
-                        tvAddress.text = "Маршрут № ${device.route}"
-                        btnCall.contentDescription = "Подать сигнал водителю"
-                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
                     }
                     BtDevice.TRAM -> {
                         tvObjectType.text = "Трамвай"
-                        tvAddress.text = "Маршрут № ${device.route}"
+                    }
+                }
+
+                when(device.type) {
+                    BtDevice.BUS, BtDevice.TROLLEYBUS, BtDevice.TRAM -> {
+                        tvAddress.visibility = View.VISIBLE
+                        val rout = "Маршрут № ${device.route}"
+                        tvAddress.text = rout
                         btnCall.contentDescription = "Подать сигнал водителю"
-                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}"
+                        val doorState = if (device.isDoorOpen) "Дверь открыта" else "Дверь закрыта"
+                        layoutItem.contentDescription = "${tvObjectType.text}. ${tvAddress.text}. $doorState"
                     }
                 }
 
@@ -84,13 +86,17 @@ class CityObjectsAdapter(
                 }
 
                 layoutItem.setOnLongClickListener {
-                    val description = "${tvObjectType.text}. ${tvAddress.text}"
+                    val description = layoutItem.contentDescription.toString()
                     listener.onAdapterItemLongClick(description)
                     true
                 }
 
                 btnCall.setOnClickListener {
                     listener.onAdapterBtnCallClick(device)
+                }
+
+                if (device.isCall()) {
+                    listener.onSignalReceived(device)
                 }
 
             }

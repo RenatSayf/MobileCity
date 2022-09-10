@@ -2,6 +2,7 @@ package com.alfasreda.mobilecity.models
 
 import org.junit.Assert
 import org.junit.Test
+import kotlin.math.roundToInt
 
 class BtDeviceTest {
 
@@ -68,5 +69,22 @@ class BtDeviceTest {
         }
         val isCall = btDevice.isCall()
         Assert.assertTrue(isCall)
+    }
+
+    @Test
+    fun getCoordinates() {
+
+        val coordinates = btDeviceTransport.getCoordinate()
+        val lat = coordinates?.latitude?.roundToInt()
+        val lon = coordinates?.longitude?.roundToInt()
+        Assert.assertTrue(lat == 25 && lon == 68)
+    }
+
+    @Test
+    fun getCoordinates_all_zero_in_bytes() {
+
+        val btDevice = BtDevice(bytes = mockBytes, rssi = 50)
+        val actualCoordinates = btDevice.getCoordinate()
+        Assert.assertEquals(Coordinates(0.0, 0.0), actualCoordinates)
     }
 }

@@ -5,10 +5,10 @@ package com.alfasreda.mobilecity.models
 import android.bluetooth.BluetoothDevice
 import android.os.Handler
 import android.os.Looper
-import android.provider.SyncStateContract
 import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.utils.DataSource
 import com.alfasreda.mobilecity.utils.injectString
+import com.alfasreda.mobilecity.utils.toHexList
 import kotlin.math.abs
 
 data class BtDevice(
@@ -91,7 +91,7 @@ data class BtDevice(
         when (type) {
             CITY_OBJECT -> {
                 bytes?.let {
-                    it[24] = 37.toByte()
+                    it[24] = 27.toByte()
                 }
                 handler.postDelayed({
                     bytes?.let {
@@ -144,6 +144,55 @@ data class BtDevice(
                 false
             }
         }
+
+    private fun sign(input: Long): Long {
+        return if (input < 0x8000000) input else input or 0x7ffffff.inv()
+    }
+
+    private fun ltob(input: Byte): Long {
+        var r = input.toLong()
+        if (r < 0) r += 256
+        return r
+    }
+
+    fun getCoordinate(): Coordinates? {
+
+        val hexList = this.bytes?.copyOfRange(17, 24)?.toHexList() ?: listOf()
+
+        return try {
+            val n0e0 = hexList[0].substringAfterLast("x").toLong(radix = 16)
+            val n1 = hexList[1].substringAfterLast("x").toLong(radix = 16)
+            val n2 = hexList[2].substringAfterLast("x").toLong(radix = 16)
+            val n3 = hexList[3].substringAfterLast("x").toLong(radix = 16)
+            val e1 = hexList[4].substringAfterLast("x").toLong(radix = 16)
+            val e2 = hexList[5].substringAfterLast("x").toLong(radix = 16)
+            val e3 = hexList[6].substringAfterLast("x").toLong(radix = 16)
+
+            //преобразование в long со знаком. n-широта, e-долгота:
+            var n: Long = n0e0 shr 4 and 0xf
+            var e: Long = n0e0 and 0xf
+            n = n * 0x1000000 + ltob(n1.toByte()) * 0x10000 + ltob(n2.toByte()) * 0x100 + ltob(n3.toByte())
+            e = e * 0x1000000 + ltob(e1.toByte()) * 0x10000 + ltob(e2.toByte()) * 0x100 + ltob(e3.toByte())
+            n = sign(n)
+            e = sign(e)
+
+            //преобразование из фиксированной запятой в плавающую:
+            var dn = n.toDouble()
+            dn /= 0x8000000
+            dn *= 180
+            var de = e.toDouble()
+            de /= 0x8000000
+            de *= 180
+
+            //выходные данные:
+            //dn - широта, в градусах
+            //de - долгота, в градусах
+            Coordinates(dn, de)
+        } catch (e: IndexOutOfBoundsException) {
+            if (BuildConfig.DEBUG) e.printStackTrace()
+            null
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         other as BtDevice
