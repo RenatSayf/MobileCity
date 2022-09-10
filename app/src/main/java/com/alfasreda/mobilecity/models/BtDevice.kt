@@ -9,6 +9,7 @@ import android.provider.SyncStateContract
 import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.utils.DataSource
 import com.alfasreda.mobilecity.utils.injectString
+import kotlin.math.abs
 
 data class BtDevice(
     val device: BluetoothDevice? = null,
@@ -27,6 +28,17 @@ data class BtDevice(
         const val TROLLEYBUS = "TROLLEYBUS"
         const val TRAFFIC_LIGHT = "TRAFFIC_LIGHT"
     }
+
+    val isDoorOpen: Boolean
+        get() {
+            val bitString = bytes?.get(24)?.toString(2)
+            return try {
+                val bit = bitString?.get(bitString.length - 3)
+                bit == '1'
+            } catch (e: IndexOutOfBoundsException) {
+                false
+            }
+        }
 
     var description: String = ""
 
@@ -53,10 +65,10 @@ data class BtDevice(
             }
         }
 
-//    private val macAddress: String
-//        get() {
-//            return if (device != null) device.address else "00:00:00:${abs(rssi)}"
-//        }
+    private val macAddress: String
+        get() {
+            return if (device != null) device.address else "00:00:00:${abs(rssi)}"
+        }
 
     val type: String
         get() {
@@ -84,7 +96,7 @@ data class BtDevice(
             }
         }
 
-    private var handler: Handler = Handler(Looper.getMainLooper())
+    private var handler: Handler = Handler()
 
     fun call() {
         when (type) {

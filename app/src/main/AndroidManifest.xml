@@ -63,11 +63,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".services.BluetoothService"
-            android:enabled="true"
-            android:exported="false" />
-
     </application>
 
 
