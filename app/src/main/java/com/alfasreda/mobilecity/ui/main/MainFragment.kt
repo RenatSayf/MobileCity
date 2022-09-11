@@ -14,6 +14,7 @@ import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -115,20 +116,21 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                 override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
                     when (checkedId) {
                         R.id.btn_all -> {
-                            speechVM.autoSpeak("Режим любые объекты")
                             mainVM.setScreenState(MainViewModel.ScreenState.AllObjectsMode(mainVM.getDisplayMode()))
                         }
                         R.id.btn_objects -> {
-                            speechVM.autoSpeak("Режим городские объекты")
                             mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
                         }
                         R.id.btn_transport -> {
-                            speechVM.autoSpeak("Режим транспорт")
                             mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
                         }
                     }
                 }
             })
+
+            includeRadioGroup.btnAll.setOnClickListener {
+                (it as RadioButton).isChecked
+            }
 
             tvMessage.setOnClickListener {
                 if (mainVM.btState.value == MainViewModel.BtState.PermissionDenied(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -337,11 +339,20 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         btnToList.visibility = View.GONE
                         btnToList.visibility = View.GONE
                     }
-                    else -> {
+                    is MainViewModel.ScreenState.AllObjectsMode -> {
+                        speechVM.autoSpeak("Режим любые объекты")
                         displayDeviceList(mainVM.getDisplayMode())
-                        if (mainVM.btDevices.isNotEmpty()) {
-                            mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
-                        }
+                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
+                    }
+                    is MainViewModel.ScreenState.CityMode -> {
+                        speechVM.autoSpeak("Режим городские объекты")
+                        displayDeviceList(mainVM.getDisplayMode())
+                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
+                    }
+                    is MainViewModel.ScreenState.TransportMode -> {
+                        speechVM.autoSpeak("Режим транспорт")
+                        displayDeviceList(mainVM.getDisplayMode())
+                        mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
                 }
             }
@@ -431,12 +442,6 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                 return
             }
         })
-    }
-
-    override fun onPause() {
-
-        //(binding.rvList.adapter as CityObjectsAdapter).resetRemovingTimers()
-        super.onPause()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

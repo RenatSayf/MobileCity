@@ -47,12 +47,6 @@ class CityObjectsAdapter(
             with(binding) {
 
                 when(device.type) {
-                    BtDevice.CITY_OBJECT -> {
-                        tvObjectType.text = device.objectDescription
-                        tvAddress.visibility = View.GONE
-                        btnCall.contentDescription = "Найти вход"
-                        layoutItem.contentDescription = tvObjectType.text
-                    }
                     BtDevice.BUS -> {
                         tvObjectType.text = "Автобус"
                     }
@@ -65,6 +59,12 @@ class CityObjectsAdapter(
                 }
 
                 when(device.type) {
+                    BtDevice.CITY_OBJECT -> {
+                        tvObjectType.text = device.objectDescription
+                        tvAddress.visibility = View.GONE
+                        btnCall.contentDescription = "Найти вход"
+                        layoutItem.contentDescription = tvObjectType.text
+                    }
                     BtDevice.BUS, BtDevice.TROLLEYBUS, BtDevice.TRAM -> {
                         tvAddress.visibility = View.VISIBLE
                         val rout = "Маршрут № ${device.route}"

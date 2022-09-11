@@ -56,7 +56,7 @@ class MainViewModel(
         object Disable: ScreenState()
     }
 
-    private var _screenState = MutableLiveData<ScreenState>(ScreenState.Init)
+    private var _screenState = MutableLiveData<ScreenState>(ScreenState.Disable)
     val screenState: LiveData<ScreenState> = _screenState
     fun setScreenState(state: ScreenState) {
         _screenState.value = state
