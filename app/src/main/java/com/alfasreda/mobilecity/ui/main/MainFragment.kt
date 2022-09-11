@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Message
 import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +35,7 @@ import com.alfasreda.mobilecity.utils.*
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
+import kotlinx.coroutines.flow.collect
 
 
 class MainFragment : Fragment(), IBtDevicesAdapterListener {
@@ -467,25 +468,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
     override fun onAdapterBtnCallClick(device: BtDevice) {
         val id = device.id
         mainVM.startAdvertising(id)
-        speechVM.speak("Вызываю", speakId = "XXX", listener = object : UtteranceProgressListener() {
-            override fun onStart(utteranceId: String?) {}
-
-            override fun onDone(utteranceId: String?) {
-                if (utteranceId == "XXX") {
-                    appRingtone()?.play()
-                }
-            }
-            @Deprecated("Deprecated in Java", ReplaceWith(
-                "appRingtone()?.play()",
-                "com.alfasreda.mobilecity.utils.appRingtone"
-            )
-            )
-            override fun onError(utteranceId: String?) {
-                if (utteranceId == "XXX") {
-                    appRingtone()?.play()
-                }
-            }
-        })
+        speechVM.speak("Вызываю")
     }
 
     override fun onAdapterItemLongClick(description: String) {
@@ -505,10 +488,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         mainVM.setBtState(MainViewModel.BtState.EmptyData)
     }
 
-    override fun onSignalReceived(device: BtDevice) {
-        if (device.isCall()) {
-            speechVM.speak("Вызов принят")
-        }
+    override fun onSignalReceived(deviceId: String, isCall: Boolean) {
+        if (isCall) speechVM.speak("Вызов принят")
     }
 
 

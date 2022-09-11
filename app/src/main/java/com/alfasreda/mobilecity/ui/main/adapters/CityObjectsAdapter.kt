@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemToGridBinding
 import com.alfasreda.mobilecity.models.BtDevice
-import com.alfasreda.mobilecity.utils.appRingtone
 
 class CityObjectsAdapter(
     private val listener: IBtDevicesAdapterListener
@@ -40,6 +39,8 @@ class CityObjectsAdapter(
 
 
     inner class ViewHolder(private val binding: ItemToGridBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        private var calledDeviceId = ""
 
         @SuppressLint("SetTextI18n")
         fun bind(device: BtDevice, position: Int, count: Int) {
@@ -82,7 +83,6 @@ class CityObjectsAdapter(
                 }
                 else {
                     layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
-                    itemView.context.appRingtone()?.stop()
                 }
 
                 layoutItem.setOnLongClickListener {
@@ -95,8 +95,13 @@ class CityObjectsAdapter(
                     listener.onAdapterBtnCallClick(device)
                 }
 
-                if (device.isCall()) {
-                    listener.onSignalReceived(device)
+                if (device.isCall() && calledDeviceId.isEmpty()) {
+                    calledDeviceId = device.id
+                    listener.onSignalReceived(device.id, device.isCall())
+                }
+
+                if (!device.isCall() && device.id == calledDeviceId) {
+                    calledDeviceId = ""
                 }
 
             }
