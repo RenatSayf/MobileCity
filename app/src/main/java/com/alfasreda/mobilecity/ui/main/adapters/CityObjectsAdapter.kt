@@ -68,7 +68,7 @@ class CityObjectsAdapter(
                     }
                     BtDevice.BUS, BtDevice.TROLLEYBUS, BtDevice.TRAM -> {
                         tvAddress.visibility = View.VISIBLE
-                        val rout = "Маршрут № ${device.route}"
+                        val rout = "Маршрут № ${device.objectDescription}"
                         tvAddress.text = rout
                         btnCall.contentDescription = "Подать сигнал водителю"
                         val doorState = if (device.isDoorOpen) "Дверь открыта" else "Дверь закрыта"
