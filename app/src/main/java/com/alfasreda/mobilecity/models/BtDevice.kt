@@ -4,8 +4,9 @@ package com.alfasreda.mobilecity.models
 
 import android.bluetooth.BluetoothDevice
 import android.os.Handler
-import android.os.Looper
 import com.alfasreda.mobilecity.BuildConfig
+import com.alfasreda.mobilecity.models.enums.TrafficLightState
+import com.alfasreda.mobilecity.models.enums.TransportState
 import com.alfasreda.mobilecity.utils.DataSource
 import com.alfasreda.mobilecity.utils.injectString
 import com.alfasreda.mobilecity.utils.toHexList
@@ -31,9 +32,20 @@ data class BtDevice(
 
     var description: String = ""
 
-    val objectDescription: String
+    val objectDescription: String?
         get() {
-            return bytes?.copyOfRange(26, bytes?.size ?: 26)?.toString(charset("Windows-1251")) ?: "Неизвестный объект"
+            try {
+                val range = bytes?.copyOfRange(26, bytes?.size ?: 26)
+                val allZero = range?.all {
+                    it.toInt() == 0
+                }
+                if (allZero != false) return null
+                return range.toString(charset("Windows-1251"))
+            }
+            catch (e: IndexOutOfBoundsException) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                return null
+            }
         }
 
     fun setObjectDescription(description: String) {
@@ -61,14 +73,19 @@ data class BtDevice(
 
     val type: String
         get() {
-            val value = bytes?.get(7)?.toInt()?.toChar() ?: ""
-            return when(value) {
-                '0' -> CITY_OBJECT
-                '1' -> BUS
-                '2' -> TROLLEYBUS
-                '3' -> TRAM
-                '4' -> TRAFFIC_LIGHT
-                else -> UNDEFINED
+            return try {
+                val value = bytes?.get(7)?.toInt()?.toChar() ?: ""
+                when(value) {
+                    '0' -> CITY_OBJECT
+                    '1' -> BUS
+                    '2' -> TROLLEYBUS
+                    '3' -> TRAM
+                    '4' -> TRAFFIC_LIGHT
+                    else -> UNDEFINED
+                }
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                UNDEFINED
             }
         }
 
@@ -91,21 +108,37 @@ data class BtDevice(
         when (type) {
             CITY_OBJECT -> {
                 bytes?.let {
-                    it[24] = 27.toByte()
+                    try {
+                        it[24] = 37.toByte()
+                    } catch (e: IndexOutOfBoundsException) {
+                        if (BuildConfig.DEBUG) e.printStackTrace()
+                    }
                 }
                 handler.postDelayed({
                     bytes?.let {
-                        it[24] = 5.toByte()
+                        try {
+                            it[24] = 5.toByte()
+                        } catch (e: IndexOutOfBoundsException) {
+                            if (BuildConfig.DEBUG) e.printStackTrace()
+                        }
                     }
                 }, 30000)
             }
             BUS, TROLLEYBUS, TRAM -> {
                 bytes?.let {
-                    it[24] = 37.toByte() //TODO уточнить какое значение должно быть для признака "Вызов принят" (27 или 37)
+                    try {
+                        it[24] = 37.toByte() //TODO уточнить какое значение должно быть для признака "Вызов принят" (27 или 37)
+                    } catch (e: IndexOutOfBoundsException) {
+                        if (BuildConfig.DEBUG) e.printStackTrace()
+                    }
                 }
                 handler.postDelayed({
                     bytes?.let {
-                        it[24] = 7.toByte()
+                        try {
+                            it[24] = 7.toByte()
+                        } catch (e: IndexOutOfBoundsException) {
+                            if (BuildConfig.DEBUG) e.printStackTrace()
+                        }
                     }
                 }, 10000)
             }
@@ -114,8 +147,8 @@ data class BtDevice(
 
     fun isCall(): Boolean = when (type) {
         CITY_OBJECT -> {
-            val bitString = bytes?.get(24)?.toString(2)
             try {
+                val bitString = bytes?.get(24)?.toString(2)
                 val bit = bitString?.get(bitString.length - 6)
                 bit == '1'
             } catch (e: IndexOutOfBoundsException) {
@@ -123,8 +156,8 @@ data class BtDevice(
             }
         }
         BUS, TROLLEYBUS, TRAM -> {
-            val bitString = bytes?.get(24)?.toString(2)
             try {
+                val bitString = bytes?.get(24)?.toString(2)
                 val bit = bitString?.get(bitString.length - 6)
                 bit == '1'
             } catch (e: IndexOutOfBoundsException) {
@@ -136,12 +169,55 @@ data class BtDevice(
 
     val isDoorOpen: Boolean
         get() {
-            val bitString = bytes?.get(24)?.toString(2)
             return try {
+                val bitString = bytes?.get(24)?.toString(2)
                 val bit = bitString?.get(bitString.length - 3)
                 bit == '1'
             } catch (e: IndexOutOfBoundsException) {
                 false
+            }
+        }
+
+    val trafficLightColor: TrafficLightState?
+        get() {
+            return when(type) {
+                TRAFFIC_LIGHT -> {
+                    try {
+                        val bitString = bytes?.get(24)?.toString(2)
+                        val bit = bitString?.substring(3, 5)
+                        when(bit) {
+                            "01" -> TrafficLightState.Green
+                            "10" -> TrafficLightState.Yellow
+                            "11" -> TrafficLightState.Red
+                            else -> null
+                        }
+                    } catch (e: IndexOutOfBoundsException) {
+                        null
+                    }
+                }
+                else -> null
+            }
+        }
+
+    val transportState: TransportState?
+        get() {
+            return when(type) {
+                BUS, TROLLEYBUS, TRAM -> {
+                    try {
+                        val bitString = bytes?.get(24)?.toString(2)
+                        val bit = bitString?.substring(3, 5)
+                        when(bit) {
+                            "00" -> TransportState.DIRECT_ROUTE
+                            "01" -> TransportState.REVERSE_ROUTE
+                            "10" -> TransportState.NOT_ROUTE
+                            "11" -> TransportState.BREAKDOWN
+                            else -> null
+                        }
+                    } catch (e: IndexOutOfBoundsException) {
+                        null
+                    }
+                }
+                else -> null
             }
         }
 
@@ -156,10 +232,9 @@ data class BtDevice(
     }
 
     fun getCoordinate(): Coordinates? {
-
-        val hexList = this.bytes?.copyOfRange(17, 24)?.toHexList() ?: listOf()
-
         return try {
+            val hexList = this.bytes?.copyOfRange(17, 24)?.toHexList() ?: listOf()
+
             val n0e0 = hexList[0].substringAfterLast("x").toLong(radix = 16)
             val n1 = hexList[1].substringAfterLast("x").toLong(radix = 16)
             val n2 = hexList[2].substringAfterLast("x").toLong(radix = 16)

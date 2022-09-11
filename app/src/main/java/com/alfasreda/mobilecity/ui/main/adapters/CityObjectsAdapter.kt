@@ -61,7 +61,9 @@ class CityObjectsAdapter(
 
                 when(device.type) {
                     BtDevice.CITY_OBJECT -> {
-                        tvObjectType.text = device.objectDescription
+                        val description = device.objectDescription
+                        val s = description ?: "Неизвестный объект"
+                        tvObjectType.text = description ?: "Неизвестный объект"
                         tvAddress.visibility = View.GONE
                         btnCall.contentDescription = "Найти вход"
                         layoutItem.contentDescription = tvObjectType.text

@@ -1,5 +1,6 @@
 package com.alfasreda.mobilecity.models
 
+import com.alfasreda.mobilecity.models.enums.TrafficLightState
 import org.junit.Assert
 import org.junit.Test
 import kotlin.math.roundToInt
@@ -86,5 +87,19 @@ class BtDeviceTest {
         val btDevice = BtDevice(bytes = mockBytes, rssi = 50)
         val actualCoordinates = btDevice.getCoordinate()
         Assert.assertEquals(Coordinates(0.0, 0.0), actualCoordinates)
+    }
+
+    @Test
+    fun trafficLightColor_Red() {
+        val btDevice = BtDevice(
+            rssi = -63,
+            bytes = mockBytes.clone().apply {
+                set(7, 52.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51, trafficLight=52
+                set(14, 54.toByte()) // id = 49..57
+                set(24, 30.toByte()) //set color
+            }
+        )
+        val trafficLightColor = btDevice.trafficLightColor
+        Assert.assertTrue(trafficLightColor == TrafficLightState.Yellow)
     }
 }
