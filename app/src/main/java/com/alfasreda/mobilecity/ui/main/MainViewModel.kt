@@ -53,10 +53,10 @@ class MainViewModel(
         data class AllObjectsMode(val mode: DisplayMode): ScreenState()
         data class CityMode(val mode: DisplayMode): ScreenState()
         data class TransportMode(val mode: DisplayMode): ScreenState()
-        object Disable: ScreenState()
+        object Disabled: ScreenState()
     }
 
-    private var _screenState = MutableLiveData<ScreenState>(ScreenState.Disable)
+    private var _screenState = MutableLiveData<ScreenState>(ScreenState.Disabled)
     val screenState: LiveData<ScreenState> = _screenState
     fun setScreenState(state: ScreenState) {
         _screenState.value = state

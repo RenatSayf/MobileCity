@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +20,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,11 +29,13 @@ import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.ui.main.adapters.CityObjectsAdapter
 import com.alfasreda.mobilecity.ui.main.adapters.IBtDevicesAdapterListener
 import com.alfasreda.mobilecity.ui.splash.KEY_FIRST_RUN
-import com.alfasreda.mobilecity.utils.*
+import com.alfasreda.mobilecity.utils.Speech
+import com.alfasreda.mobilecity.utils.appPref
+import com.alfasreda.mobilecity.utils.setUpToolBar
+import com.alfasreda.mobilecity.utils.showSnackBar
 import com.fondesa.kpermissions.allGranted
 import com.fondesa.kpermissions.extension.permissionsBuilder
 import com.fondesa.kpermissions.extension.send
-import kotlinx.coroutines.flow.collect
 
 
 class MainFragment : Fragment(), IBtDevicesAdapterListener {
@@ -145,7 +145,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
 
                 when (state) {
                     MainViewModel.BtState.BtIsOff -> {
-                        mainVM.setScreenState(MainViewModel.ScreenState.Disable)
+                        mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
                         val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
                         startActivityForResult(enableBtIntent, 1111)
                     }
@@ -161,12 +161,13 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         val message = "Устройство не поддерживает блютуз"
                         speechVM.autoSpeak(message)
                         showBtDeviceList(isList = false, isProgress = false, message = message)
-                        mainVM.setScreenState(MainViewModel.ScreenState.Disable)
+                        mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
                     }
                     MainViewModel.BtState.NoBtPermission -> {
                         val message = "Для работы приложения требуется включение блютуз. Нажмите что бы продолжить."
                         speechVM.autoSpeak(message)
                         showBtDeviceList(isList = false, isProgress = false, message = message)
+                        mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
                     }
                     is MainViewModel.BtState.ScanFailure -> {
                         progressBar.visibility = View.GONE
@@ -177,8 +178,10 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         scanHandler?.removeCallbacksAndMessages(null)
                         val data = state.data.toList()
                         val screenState = mainVM.screenState.value
-
                         when(screenState) {
+                            MainViewModel.ScreenState.Disabled -> {
+                                mainVM.setScreenState(MainViewModel.ScreenState.Init)
+                            }
                             is MainViewModel.ScreenState.AllObjectsMode -> {
                                 when(screenState.mode) {
                                     MainViewModel.DisplayMode.Grid -> {
@@ -317,6 +320,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     MainViewModel.BtState.EmptyData -> {
                         val message = getString(R.string.no_visible_objects)
                         showBtDeviceList(isList = false, isProgress = false, message = message)
+                        mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
                         speechVM.autoSpeak(message)
                     }
                 }
@@ -331,13 +335,19 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                             isProgress = true,
                             message = "Поиск объектов..."
                         )
-                        includeRadioGroup.rgFilter.check(R.id.btn_all)
+                        includeRadioGroup.rgFilter.forEach {
+                            it.isEnabled = true
+                        }
+                        includeRadioGroup.btnAll.isChecked = true
+                        btnToPage.visibility = View.VISIBLE
+                        btnToList.visibility = View.VISIBLE
                         mainVM.setScreenState(MainViewModel.ScreenState.AllObjectsMode(mainVM.getDisplayMode()))
                     }
-                    MainViewModel.ScreenState.Disable -> {
-                        includeRadioGroup.rgFilter.visibility = View.GONE
+                    MainViewModel.ScreenState.Disabled -> {
+                        includeRadioGroup.rgFilter.forEach {
+                            it.isEnabled = false
+                        }
                         btnToPage.visibility = View.GONE
-                        btnToList.visibility = View.GONE
                         btnToList.visibility = View.GONE
                     }
                     is MainViewModel.ScreenState.AllObjectsMode -> {
