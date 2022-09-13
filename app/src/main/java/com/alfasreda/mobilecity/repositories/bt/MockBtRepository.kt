@@ -65,6 +65,7 @@ class MockBtRepository : BtRepository() {
                 set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
+            macAddress = "aa:aa:aa:aa"
             description = "Аптека Живика"
             address = "Улица Челюскинцев, 19"
             setObjectDescription("Аптека Живика\nУлица Челюскинцев, 19")
@@ -77,6 +78,7 @@ class MockBtRepository : BtRepository() {
                 set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
+            macAddress = "bb:bb:bb:bb"
             description = "Остановка трамвая"
             address = "Ж/д вокзал"
             setObjectDescription("Остановка трамвая\nЖ/д вокзал")
@@ -89,6 +91,7 @@ class MockBtRepository : BtRepository() {
                 set(24, 7.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
+            macAddress = "cc:cc:cc:cc"
             description = "Автобус №56"
             setObjectDescription("56")
         },
@@ -100,6 +103,7 @@ class MockBtRepository : BtRepository() {
                 set(24, 7.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
+            macAddress = "dd:dd:dd:dd"
             description = "Трамвай №3"
             setObjectDescription("3")
         },
@@ -111,6 +115,7 @@ class MockBtRepository : BtRepository() {
                 set(24, 5.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
+            macAddress = "ff:ff:ff:ff"
             description = "Супермаркет Пятёрочка"
             address = "Челюскинцев, 23"
             setObjectDescription("Супермаркет Пятёрочка\nЧелюскинцев, 23")
@@ -123,6 +128,7 @@ class MockBtRepository : BtRepository() {
                 set(24, 7.toByte()) //sign of a call: city-object=53, transport=55
             }
         ).apply {
+            macAddress = "gg:gg:gg:gg"
             description = "Троллейбус №12"
             setObjectDescription("12")
         }

@@ -66,9 +66,9 @@ data class BtDevice(
             }
         }
 
-    private val macAddress: String
+    var macAddress: String = ""
         get() {
-            return if (device != null) device.address else "00:00:00:${abs(rssi)}"
+            return if (device != null) device.address else field
         }
 
     val type: String

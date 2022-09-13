@@ -166,12 +166,12 @@ class BtDevicePageAdapter(
                     listener.onAdapterItemLongClick(device.description)
                     true
                 }
-                btnPrevious.setOnClickListener {
-                    listener.onAdapterPreviousBtnClick(position)
-                }
-                btnNext.setOnClickListener {
-                    listener.onAdapterNextBtnClick(position)
-                }
+//                btnPrevious.setOnClickListener {
+//                    listener.onAdapterPreviousBtnClick(position)
+//                }
+//                btnNext.setOnClickListener {
+//                    listener.onAdapterNextBtnClick(position)
+//                }
                 btnCall.setOnClickListener {
                     listener.onAdapterBtnCallClick(device)
                 }
@@ -250,12 +250,12 @@ class BtDevicePageAdapter(
                     }
                 }
 
-                btnPrevious.setOnClickListener {
-                    listener.onAdapterPreviousBtnClick(position)
-                }
-                btnNext.setOnClickListener {
-                    listener.onAdapterNextBtnClick(position)
-                }
+//                btnPrevious.setOnClickListener {
+//                    listener.onAdapterPreviousBtnClick(position)
+//                }
+//                btnNext.setOnClickListener {
+//                    listener.onAdapterNextBtnClick(position)
+//                }
                 btnCall.setOnClickListener {
                     listener.onAdapterBtnCallClick(device)
                 }

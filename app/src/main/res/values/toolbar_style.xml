@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppToolBar">
+
+        <item name="android:background">@color/toolbar_bg_color</item>
+        <item name="titleTextColor">@color/toolbar_text_color</item>
+
+
+    </style>
+
+</resources>

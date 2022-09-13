@@ -11,4 +11,15 @@
     <color name="blue">#2196F3</color>
     <color name="light_green">#20F610</color>
     <color name="super_light_green">#C8FDC4</color>
+
+
+    <color name="primary_color">#2196F3</color>
+    <color name="toolbar_bg_color">#2196F3</color>
+    <color name="toolbar_text_color">#FFFFFFFF</color>
+    <color name="box_stroke_color">#2196F3</color>
+    <color name="btn_default_color">#2196F3</color>
+    <color name="btn_default_selected_color">#C8FDC4</color>
+    <color name="btn_default_text_color">#FFFFFFFF</color>
+    <color name="called_bg_color">#C8FDC4</color>
+
 </resources>

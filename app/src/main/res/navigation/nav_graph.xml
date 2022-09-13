@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_mainFragment_to_menuFragment"
             app:destination="@id/menuFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_deviceInfoFragment"
+            app:destination="@id/deviceInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/menuFragment"
@@ -38,5 +41,10 @@
         android:name="com.alfasreda.mobilecity.ui.settings.RootSettingsFragment"
         android:label="fragment_root_settings"
         tools:layout="@layout/fragment_root_settings" />
+    <fragment
+        android:id="@+id/deviceInfoFragment"
+        android:name="com.alfasreda.mobilecity.ui.details.DeviceInfoFragment"
+        android:label="fragment_device_info"
+        tools:layout="@layout/fragment_device_info" />
 
 </navigation>

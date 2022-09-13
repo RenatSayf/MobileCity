@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.ui.details.DeviceInfoFragment
 import com.alfasreda.mobilecity.ui.main.adapters.CityObjectsAdapter
 import com.alfasreda.mobilecity.ui.main.adapters.IBtDevicesAdapterListener
 import com.alfasreda.mobilecity.ui.splash.KEY_FIRST_RUN
@@ -467,12 +468,10 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
         }
     }
 
-    override fun onAdapterPreviousBtnClick(position: Int) {
-
-    }
-
-    override fun onAdapterNextBtnClick(position: Int) {
-
+    override fun onAdapterItemClick(device: BtDevice) {
+        findNavController().navigate(R.id.action_mainFragment_to_deviceInfoFragment, Bundle().apply {
+            putString(DeviceInfoFragment.KEY_ID, device.id)
+        })
     }
 
     override fun onAdapterBtnCallClick(device: BtDevice) {

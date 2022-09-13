@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <style name="AppOutlinedTextView" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <item name="android:textColor">@color/text_input_box_stroke</item>
+        <item name="android:background">@drawable/bg_rectangle_round_corners</item>
+        <item name="android:textColorHint">@color/text_input_box_stroke</item>
+    </style>
+    
+</resources>

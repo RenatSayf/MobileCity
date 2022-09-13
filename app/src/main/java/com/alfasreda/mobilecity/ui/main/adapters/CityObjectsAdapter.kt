@@ -62,7 +62,6 @@ class CityObjectsAdapter(
                 when(device.type) {
                     BtDevice.CITY_OBJECT -> {
                         val description = device.objectDescription
-                        val s = description ?: "Неизвестный объект"
                         tvObjectType.text = description ?: "Неизвестный объект"
                         tvAddress.visibility = View.GONE
                         btnCall.contentDescription = "Найти вход"
@@ -81,10 +80,14 @@ class CityObjectsAdapter(
                 tvRssiValue.text = "${device.rssi} dB"
 
                 if (device.isCall()) {
-                    layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.super_light_green))
+                    layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.called_bg_color))
                 }
                 else {
                     layoutItem.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.white))
+                }
+
+                layoutItem.setOnClickListener {
+                    listener.onAdapterItemClick(device)
                 }
 
                 layoutItem.setOnLongClickListener {
