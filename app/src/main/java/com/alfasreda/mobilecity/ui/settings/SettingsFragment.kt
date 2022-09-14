@@ -19,7 +19,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         requireActivity().setTheme(R.style.AppSettingsStyle)
 
-        view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray))
+        view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.screen_bg_color))
     }
 
 }

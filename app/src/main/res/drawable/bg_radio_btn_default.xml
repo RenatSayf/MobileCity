@@ -4,14 +4,15 @@
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
             <corners android:radius="16dp" />
-            <solid android:color="@color/gray" />
+            <solid android:color="@color/primary_color_light" />
+            <stroke android:color="@color/white" android:width="2dp" />
         </shape>
     </item>
 
     <item android:state_checked="false">
         <shape android:shape="rectangle">
             <corners android:radius="16dp" />
-            <solid android:color="@color/blue" />
+            <solid android:color="@color/btn_default_color" />
         </shape>
     </item>
 
@@ -20,7 +21,8 @@
             <item>
                 <shape android:shape="rectangle">
                     <corners android:radius="16dp" />
-                    <solid android:color="@color/light_green" />
+                    <solid android:color="@color/white" />
+                    <stroke android:color="@color/primary_color" android:width="2dp" />
                 </shape>
             </item>
         </ripple>

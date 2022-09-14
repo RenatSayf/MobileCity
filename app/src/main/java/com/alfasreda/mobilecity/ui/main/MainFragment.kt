@@ -17,12 +17,14 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.airbnb.paris.extensions.style
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.MainFragmentBinding
 import com.alfasreda.mobilecity.models.BtDevice
@@ -116,6 +118,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
             includeRadioGroup.rgFilter.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
 
                 override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+
                     when (checkedId) {
                         R.id.btn_all -> {
                             mainVM.setScreenState(MainViewModel.ScreenState.AllObjectsMode(mainVM.getDisplayMode()))

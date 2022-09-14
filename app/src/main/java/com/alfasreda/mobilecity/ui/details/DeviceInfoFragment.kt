@@ -112,7 +112,7 @@ class DeviceInfoFragment : Fragment() {
                             else -> "Неизвестен"
                         }
                         contentDescription = "$objectName. Сигнал $textColor"
-                        objectName = "Светофор\n${device.objectDescription}\n$textColor"
+                        objectName = "Светофор\n${device.objectDescription}\nСигнал $textColor"
                     }
                     BtDevice.CITY_OBJECT -> {
                         btnCall.contentDescription = "Найти вход"

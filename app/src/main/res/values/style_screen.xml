@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppScreenStyle">
+
+        <item name="android:background">@color/screen_bg_color</item>
+        <item name="android:textColor">@color/text_color</item>
+
+    </style>
+
+</resources>

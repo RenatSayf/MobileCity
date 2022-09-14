@@ -51,7 +51,7 @@ class CityObjectsAdapter(
             with(binding) {
 
                 tvAddress.visibility = View.VISIBLE
-                btnCall.isEnabled = true
+                btnCall.visibility = View.VISIBLE
 
                 when(device.type) {
                     BtDevice.BUS -> {
@@ -80,7 +80,7 @@ class CityObjectsAdapter(
                             else -> "Неизвестен"
                         }
                         layoutItem.contentDescription = "${tvObjectType.text}. $description. Сигнал $textColor"
-                        btnCall.isEnabled = false
+                        btnCall.visibility = View.INVISIBLE
                     }
                     BtDevice.CITY_OBJECT -> {
                         val description = device.objectDescription

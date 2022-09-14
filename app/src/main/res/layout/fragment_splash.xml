@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.splash.SplashFragment"
-    android:background="@color/blue">
+    android:background="@color/splash_screen_bg_color">
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"

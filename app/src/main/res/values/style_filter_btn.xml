@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppFilterButtonDefault">
+
+        <item name="android:background">@drawable/bg_radio_btn_default</item>
+        <item name="android:textColor">@drawable/selector_filter_btn_text_color</item>
+
+    </style>
+
+</resources>

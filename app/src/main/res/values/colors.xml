@@ -13,13 +13,21 @@
     <color name="super_light_green">#C8FDC4</color>
 
 
-    <color name="primary_color">#2196F3</color>
-    <color name="toolbar_bg_color">#2196F3</color>
+    <color name="primary_color">#FFC107</color>
+    <color name="primary_color_light">#F6E2A7</color>
+    <color name="splash_screen_bg_color">@color/primary_color</color>
+    <color name="toolbar_bg_color">@color/primary_color</color>
     <color name="toolbar_text_color">#FFFFFFFF</color>
-    <color name="box_stroke_color">#2196F3</color>
-    <color name="btn_default_color">#2196F3</color>
+    <color name="box_stroke_color">@color/primary_color</color>
+    <color name="btn_default_color">@color/primary_color</color>
     <color name="btn_default_selected_color">#C8FDC4</color>
     <color name="btn_default_text_color">#FFFFFFFF</color>
+    <color name="text_color">#FFFFFFFF</color>
     <color name="called_bg_color">#C8FDC4</color>
+    <color name="screen_bg_color">#4C4A4A</color>
+    <color name="text_color_on_dark_bg">#FFFFFFFF</color>
+    <color name="text_color_on_light_bg">#FF000000</color>
+    <color name="text_color_primary">#FFFFFFFF</color>
+    <color name="text_color_secondary">#F4F3F3</color>
 
 </resources>

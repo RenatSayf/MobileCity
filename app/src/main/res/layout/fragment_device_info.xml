@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/white"
+    style="@style/AppScreenStyle"
     tools:context=".ui.details.DeviceInfoFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -23,7 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:theme="@style/AppScreenStyle">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_object_name"
@@ -36,6 +37,7 @@
             tools:text="Автобус. Маршрут № 56. Дверь открыта"
             android:inputType="textMultiLine"
             android:textSize="24sp"
+            android:textStyle="bold"
             />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -155,7 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:padding="12dp"
+            android:padding="16dp"
             style="@style/AppButton"
             android:text="Назад"
             android:textAllCaps="false"

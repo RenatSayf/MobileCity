@@ -5,6 +5,7 @@
 
         <item name="android:background">@color/toolbar_bg_color</item>
         <item name="titleTextColor">@color/toolbar_text_color</item>
+        <item name="android:textColor">@color/toolbar_text_color</item>
 
 
     </style>

@@ -6,7 +6,7 @@
     android:padding="8dp"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
-    android:background="@color/blue">
+    android:theme="@style/AppToolBar">
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btn_back_navigation"
@@ -25,15 +25,7 @@
         tools:text="Title"
         android:gravity="center_vertical"
         android:textSize="24sp"
-        android:textColor="@color/white"
         android:textStyle="bold"
         android:focusable="true"/>
-
-<!--    <androidx.appcompat.widget.AppCompatImageButton-->
-<!--        android:id="@+id/btn_to_list"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:src="@drawable/ic_main_menu_white"-->
-<!--        android:background="@drawable/bg_ripple_round_transparent"/>-->
 
 </androidx.appcompat.widget.LinearLayoutCompat>
