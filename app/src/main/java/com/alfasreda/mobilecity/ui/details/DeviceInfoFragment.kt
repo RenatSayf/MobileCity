@@ -1,3 +1,5 @@
+@file:Suppress("MoveVariableDeclarationIntoWhen")
+
 package com.alfasreda.mobilecity.ui.details
 
 import android.annotation.SuppressLint
@@ -11,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.alfasreda.mobilecity.databinding.FragmentDeviceInfoBinding
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.models.enums.TrafficLightState
 import com.alfasreda.mobilecity.ui.main.MainViewModel
 import com.alfasreda.mobilecity.ui.main.SpeechViewModel
 
@@ -84,6 +87,7 @@ class DeviceInfoFragment : Fragment() {
             if (device.id == id) {
                 var objectName = ""
                 var contentDescription = ""
+                btnCall.visibility = View.VISIBLE
 
                 when(device.type) {
                     BtDevice.BUS -> {
@@ -98,19 +102,33 @@ class DeviceInfoFragment : Fragment() {
                 }
 
                 when(device.type) {
+                    BtDevice.TRAFFIC_LIGHT -> {
+                        btnCall.visibility = View.GONE
+                        val color = device.trafficLightColor
+                        val textColor = when (color) {
+                            TrafficLightState.Red -> "Красный"
+                            TrafficLightState.Yellow -> "Желтый"
+                            TrafficLightState.Green -> "Зеленый"
+                            else -> "Неизвестен"
+                        }
+                        contentDescription = "$objectName. Сигнал $textColor"
+                        objectName = "Светофор\n${device.objectDescription}\n$textColor"
+                    }
                     BtDevice.CITY_OBJECT -> {
                         btnCall.contentDescription = "Найти вход"
+                        btnCall.text = btnCall.contentDescription
                         objectName = device.objectDescription ?: ""
                         contentDescription = objectName
                     }
                     BtDevice.BUS, BtDevice.TROLLEYBUS, BtDevice.TRAM -> {
                         btnCall.contentDescription = "Подать сигнал водителю"
+                        btnCall.text = "Вызвать"
                         val doorState = if (device.isDoorOpen) "Дверь открыта" else "Дверь закрыта"
                         contentDescription = "${tvObjectName.text}. $doorState"
                     }
                 }
 
-                tvObjectName.setText(objectName)
+                tvObjectName.text = objectName
                 tvObjectName.contentDescription = contentDescription
 
                 tvDeviceId.text = device.id
@@ -122,6 +140,11 @@ class DeviceInfoFragment : Fragment() {
                 btnCall.setOnClickListener {
                     mainVM.startAdvertising(id)
                     speechVM.autoSpeak("Вызываю")
+                }
+
+                tvObjectName.setOnLongClickListener {
+                    speechVM.speak(it.contentDescription.toString())
+                    true
                 }
 
                 if (device.isCall() && !deviceVM.isCalled) {

@@ -90,13 +90,13 @@ class BtDeviceTest {
     }
 
     @Test
-    fun trafficLightColor_Red() {
+    fun trafficLightColor_Yellow() {
         val btDevice = BtDevice(
             rssi = -63,
             bytes = mockBytes.clone().apply {
                 set(7, 52.toByte()) // device type city-object=48, bus=49, trolleybus=50, tram=51, trafficLight=52
                 set(14, 54.toByte()) // id = 49..57
-                set(24, 30.toByte()) //set color
+                set(24, 30.toByte()) //set yellow color
             }
         )
         val trafficLightColor = btDevice.trafficLightColor

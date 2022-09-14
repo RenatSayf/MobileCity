@@ -1,3 +1,5 @@
+@file:Suppress("MoveVariableDeclarationIntoWhen")
+
 package com.alfasreda.mobilecity.ui.main.adapters
 
 import android.annotation.SuppressLint
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.alfasreda.mobilecity.R
 import com.alfasreda.mobilecity.databinding.ItemToGridBinding
 import com.alfasreda.mobilecity.models.BtDevice
+import com.alfasreda.mobilecity.models.enums.TrafficLightState
 
 class CityObjectsAdapter(
     private val listener: IBtDevicesAdapterListener
@@ -47,6 +50,9 @@ class CityObjectsAdapter(
 
             with(binding) {
 
+                tvAddress.visibility = View.VISIBLE
+                btnCall.isEnabled = true
+
                 when(device.type) {
                     BtDevice.BUS -> {
                         tvObjectType.text = "Автобус"
@@ -57,9 +63,25 @@ class CityObjectsAdapter(
                     BtDevice.TRAM -> {
                         tvObjectType.text = "Трамвай"
                     }
+                    BtDevice.TRAFFIC_LIGHT -> {
+                        tvObjectType.text = "Светофор"
+                    }
                 }
 
                 when(device.type) {
+                    BtDevice.TRAFFIC_LIGHT -> {
+                        val description = device.objectDescription
+                        tvAddress.text = description ?: "Неизвестный объект"
+                        val color = device.trafficLightColor
+                        val textColor = when (color) {
+                            TrafficLightState.Red -> "Красный"
+                            TrafficLightState.Yellow -> "Желтый"
+                            TrafficLightState.Green -> "Зеленый"
+                            else -> "Неизвестен"
+                        }
+                        layoutItem.contentDescription = "${tvObjectType.text}. $description. Сигнал $textColor"
+                        btnCall.isEnabled = false
+                    }
                     BtDevice.CITY_OBJECT -> {
                         val description = device.objectDescription
                         tvObjectType.text = description ?: "Неизвестный объект"

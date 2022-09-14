@@ -219,7 +219,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                             }
                             is MainViewModel.ScreenState.CityMode -> {
                                 val filteredData = data.filter {
-                                    it.type == BtDevice.CITY_OBJECT
+                                    it.type == BtDevice.CITY_OBJECT || it.type == BtDevice.TRAFFIC_LIGHT
                                 }
                                 when(screenState.mode) {
                                     MainViewModel.DisplayMode.Grid -> {

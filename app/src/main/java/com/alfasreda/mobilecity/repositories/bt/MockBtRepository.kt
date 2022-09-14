@@ -131,6 +131,17 @@ class MockBtRepository : BtRepository() {
             macAddress = "gg:gg:gg:gg"
             description = "Троллейбус №12"
             setObjectDescription("12")
+        },
+        BtDevice(
+            rssi = -76,
+            bytes = mockBytes.clone().apply {
+                set(7, 52.toByte()) // device type traffic_light=52
+                set(14, 55.toByte()) // id = 49..57
+                set(24, 30.toByte()) //sign of a call: city-object=53, transport=55
+            }
+        ).apply {
+            macAddress = "hh:hh:hh:hh"
+            setObjectDescription("Через улицу Свердлова")
         }
     )
 }
