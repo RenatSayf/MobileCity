@@ -4,6 +4,8 @@ package com.alfasreda.mobilecity.ui.details
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +18,7 @@ import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.models.enums.TrafficLightState
 import com.alfasreda.mobilecity.ui.main.MainViewModel
 import com.alfasreda.mobilecity.ui.main.SpeechViewModel
+import com.alfasreda.mobilecity.utils.defaultPref
 
 class DeviceInfoFragment : Fragment() {
 
@@ -51,30 +54,35 @@ class DeviceInfoFragment : Fragment() {
 
                 }
                 is MainViewModel.BtState.ScanSuccess -> {
-//                    val btDevice = state.data.find {
-//                        it.id == deviceId
-//                    }
-//                    if (btDevice == null) {
-//
-//                    }
+
                 }
                 is MainViewModel.BtState.DeviceMissing -> {
                     if (deviceId == state.device.id) {
-                        val message = "Связь с объектом потеряна. Переходим к списку объектов"
-                        speechVM.autoSpeak(message, speakId = "XXXX", listener = object : UtteranceProgressListener() {
-                            override fun onStart(utteranceId: String?) {}
 
-                            override fun onDone(utteranceId: String?) {
-                                if (utteranceId == "XXXX") {
-                                    findNavController().popBackStack()
+                        val message = "Связь с объектом потеряна. Переходим к списку объектов"
+                        val isSpeech = defaultPref.getBoolean("key_is_speech", true)
+                        if (isSpeech) {
+                            speechVM.autoSpeak(message, speakId = "XXXX", listener = object : UtteranceProgressListener() {
+                                override fun onStart(utteranceId: String?) {}
+
+                                override fun onDone(utteranceId: String?) {
+                                    if (utteranceId == "XXXX") {
+                                        findNavController().popBackStack()
+                                    }
                                 }
-                            }
-                            override fun onError(utteranceId: String?) {
-                                if (utteranceId == "XXXX") {
-                                    findNavController().popBackStack()
+                                override fun onError(utteranceId: String?) {
+                                    if (utteranceId == "XXXX") {
+                                        findNavController().popBackStack()
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        }
+                        else {
+                            binding.tvObjectName.text = message
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                findNavController().popBackStack()
+                            }, 3000)
+                        }
                     }
                 }
                 is MainViewModel.BtState.UpdateData -> {

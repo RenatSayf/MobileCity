@@ -174,11 +174,9 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
                     }
                     is MainViewModel.BtState.ScanFailure -> {
-                        if (state.errorCode != -1) {
-                            progressBar.visibility = View.GONE
-                            val message = "Ошибка блютуз сканирования. Код ${state.errorCode}"
-                            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
-                        }
+                        progressBar.visibility = View.GONE
+                        val message = "Ошибка блютуз сканирования. Код ${state.errorCode}"
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
                     }
                     is MainViewModel.BtState.ScanSuccess -> {
                         scanHandler?.removeCallbacksAndMessages(null)
@@ -327,7 +325,6 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         val message = getString(R.string.no_visible_objects)
                         showBtDeviceList(isList = false, isProgress = false, message = message)
                         mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
-                        //mainVM.setBtState(MainViewModel.BtState.ScanFailure(-1))
                         speechVM.autoSpeak(message)
                     }
                     is MainViewModel.BtState.DeviceMissing -> {
