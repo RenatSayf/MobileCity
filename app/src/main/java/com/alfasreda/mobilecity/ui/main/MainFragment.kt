@@ -450,6 +450,15 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     true
                 }
             }
+            includeRadioGroup.rgFilter.forEach { view ->
+                view.setOnLongClickListener {
+                    val description = it.contentDescription
+                    if (!description.isNullOrEmpty()) {
+                        speechVM.speak(description.toString())
+                    }
+                    true
+                }
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {

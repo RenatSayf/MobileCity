@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_page_list_white"
+            android:src="@drawable/ic_dashboard_white"
             android:background="@drawable/bg_ripple_round_transparent"
             android:contentDescription="Объекты постранично"
             android:visibility="gone"
@@ -77,29 +77,37 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv_message"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="16dp"
-                tools:text="Для работы приложения требуется доступ к данным о местоположении устройства."
-                android:contentDescription="Нажмите что бы дать разрешение о местоположении устройства."
-                android:gravity="center"
-                android:textSize="18sp"
-                android:textColor="@color/text_color_on_dark_bg"
-                tools:visibility="visible"
-                android:visibility="gone"
-                />
+                android:orientation="vertical"
+                android:gravity="center">
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:layout_gravity="center"
-                android:contentDescription="Сканируем объекты"
-                android:visibility="gone"
-                tools:visibility="visible"
-                />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    tools:text="Для работы приложения требуется доступ к данным о местоположении устройства."
+                    android:contentDescription="Нажмите что бы дать разрешение о местоположении устройства."
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:textColor="@color/text_color_on_dark_bg"
+                    tools:visibility="visible"
+                    android:visibility="gone"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="90dp"
+                    android:layout_height="90dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Сканируем объекты"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </FrameLayout>
 

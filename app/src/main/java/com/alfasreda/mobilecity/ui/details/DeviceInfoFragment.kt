@@ -111,8 +111,8 @@ class DeviceInfoFragment : Fragment() {
                             TrafficLightState.Green -> "Зеленый"
                             else -> "Неизвестен"
                         }
-                        contentDescription = "$objectName. Сигнал $textColor"
                         objectName = "Светофор\n${device.objectDescription}\nСигнал $textColor"
+                        contentDescription = objectName
                     }
                     BtDevice.CITY_OBJECT -> {
                         btnCall.contentDescription = "Найти вход"
