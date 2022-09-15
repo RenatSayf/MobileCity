@@ -91,13 +91,13 @@ class DeviceInfoFragment : Fragment() {
 
                 when(device.type) {
                     BtDevice.BUS -> {
-                        objectName = "Автобус\nМаршрут № ${device.objectDescription}"
+                        objectName = "Автобус\nМаршрут № ${device.objectDescription ?: "Неопределён"}"
                     }
                     BtDevice.TROLLEYBUS -> {
-                        objectName = "Троллейбус\nМаршрут № ${device.objectDescription}"
+                        objectName = "Троллейбус\nМаршрут № ${device.objectDescription ?: "Неопределён"}"
                     }
                     BtDevice.TRAM -> {
-                        objectName = "Трамвай\nМаршрут № ${device.objectDescription}"
+                        objectName = "Трамвай\nМаршрут № ${device.objectDescription ?: "Неопределён"}"
                     }
                 }
 
@@ -109,15 +109,19 @@ class DeviceInfoFragment : Fragment() {
                             TrafficLightState.Red -> "Красный"
                             TrafficLightState.Yellow -> "Желтый"
                             TrafficLightState.Green -> "Зеленый"
-                            else -> "Неизвестен"
+                            else -> null
                         }
-                        objectName = "Светофор\n${device.objectDescription}\nСигнал $textColor"
+                        objectName = if (device.objectDescription != null) {
+                            "Светофор\n${device.objectDescription}\nСигнал $textColor"
+                        } else {
+                            "Неизвестный объект"
+                        }
                         contentDescription = objectName
                     }
                     BtDevice.CITY_OBJECT -> {
                         btnCall.contentDescription = "Найти вход"
                         btnCall.text = btnCall.contentDescription
-                        objectName = device.objectDescription ?: ""
+                        objectName = device.objectDescription ?: "Неизвестный объект"
                         contentDescription = objectName
                     }
                     BtDevice.BUS, BtDevice.TROLLEYBUS, BtDevice.TRAM -> {
