@@ -131,6 +131,10 @@ class MainViewModel(
         btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
             override fun onLeScan(device: BtDevice) {
 
+                if (countDownTimer == null) {
+                    countDownTimer = createRemovingTimer(::removeNotActiveDevice)
+                    countDownTimer?.start()
+                }
                 if (!btDevices.contains(device)) {
                     btDevices.add(device)
                     viewModelScope.launch {
@@ -149,6 +153,8 @@ class MainViewModel(
             }
         })
     }
+
+    private var countDownTimer: CountDownTimer? = null
 
     fun initBluetooth() {
 
@@ -169,32 +175,33 @@ class MainViewModel(
         }
     }
 
-    private var countDownTimer: CountDownTimer? = null
+    private fun removeNotActiveDevice() {
 
-    init {
+        val listToRemove = btDevices.filter {
+            System.currentTimeMillis() - it.lastUpdateTime > 5000
+        }
+        listToRemove.forEach { item ->
+            val isRemoved = btDevices.remove(item)
+            if (isRemoved) {
+                _btState.value = BtState.DeviceMissing(item)
+            }
+        }
+        if (btDevices.isEmpty()) {
+            _btState.value = BtState.EmptyData
+            countDownTimer = null
+        }
+        countDownTimer?.start()
+    }
 
-        countDownTimer = object : CountDownTimer(5000, 1000) {
+    private fun createRemovingTimer(lambda: () -> Unit): CountDownTimer {
+        val countDownTimer = object : CountDownTimer(5000, 1000) {
             override fun onTick(millisUntilFinished: Long) {}
 
             override fun onFinish() {
-
-                val listToRemove = btDevices.filter {
-                    System.currentTimeMillis() - it.lastUpdateTime > 5000
-                }
-                listToRemove.forEach { item ->
-                    val isRemoved = btDevices.remove(item)
-                    if (isRemoved) {
-                        _btState.value = BtState.DeviceMissing(item)
-                    }
-                }
-                if (btDevices.isEmpty()) {
-                    _btState.value = BtState.EmptyData
-                    //return
-                }
-                countDownTimer?.start()
+                lambda.invoke()
             }
         }
-        countDownTimer?.start()
+        return countDownTimer
     }
 
     override fun onCleared() {
