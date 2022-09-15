@@ -51,10 +51,15 @@ class DeviceInfoFragment : Fragment() {
 
                 }
                 is MainViewModel.BtState.ScanSuccess -> {
-                    val btDevice = state.data.find {
-                        it.id == deviceId
-                    }
-                    if (btDevice == null) {
+//                    val btDevice = state.data.find {
+//                        it.id == deviceId
+//                    }
+//                    if (btDevice == null) {
+//
+//                    }
+                }
+                is MainViewModel.BtState.DeviceMissing -> {
+                    if (deviceId == state.device.id) {
                         val message = "Связь с объектом потеряна. Переходим к списку объектов"
                         speechVM.autoSpeak(message, speakId = "XXXX", listener = object : UtteranceProgressListener() {
                             override fun onStart(utteranceId: String?) {}

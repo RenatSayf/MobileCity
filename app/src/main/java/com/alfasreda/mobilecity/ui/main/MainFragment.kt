@@ -327,6 +327,9 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         mainVM.setScreenState(MainViewModel.ScreenState.Disabled)
                         speechVM.autoSpeak(message)
                     }
+                    is MainViewModel.BtState.DeviceMissing -> {
+
+                    }
                 }
             }
 

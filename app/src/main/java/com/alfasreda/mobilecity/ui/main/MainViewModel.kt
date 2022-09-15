@@ -34,6 +34,7 @@ class MainViewModel(
         data class ScanSuccess(val data: MutableSet<BtDevice>): BtState()
         data class ScanFailure(val errorCode: Int): BtState()
         data class UpdateData(val device: BtDevice): BtState()
+        data class DeviceMissing(val device: BtDevice): BtState()
         object EmptyData: BtState()
     }
 
@@ -176,11 +177,19 @@ class MainViewModel(
             override fun onTick(millisUntilFinished: Long) {}
 
             override fun onFinish() {
-                btDevices.removeIf {
+
+                val listToRemove = btDevices.filter {
                     System.currentTimeMillis() - it.lastUpdateTime > 5000
+                }
+                listToRemove.forEach { item ->
+                    val isRemoved = btDevices.remove(item)
+                    if (isRemoved) {
+                        _btState.value = BtState.DeviceMissing(item)
+                    }
                 }
                 if (btDevices.isEmpty()) {
                     _btState.value = BtState.EmptyData
+                    //return
                 }
                 countDownTimer?.start()
             }
