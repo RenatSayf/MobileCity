@@ -33,12 +33,14 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        speechVM.autoSpeak("Экран главного меню")
+
         with(binding) {
 
             setUpToolBar(
                 binding = includeAppBar,
                 navIconResource = R.drawable.ic_arrow_back_white,
-                iconContentDescription = "Назад на главный экран",
+                iconContentDescription = "Назад к списку объектов",
                 title = "Меню",
                 titleContentDescription = "Это главное меню приложения"
             )

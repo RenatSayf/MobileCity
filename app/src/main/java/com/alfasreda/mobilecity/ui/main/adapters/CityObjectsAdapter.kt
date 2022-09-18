@@ -52,6 +52,7 @@ class CityObjectsAdapter(
 
                 tvAddress.visibility = View.VISIBLE
                 btnCall.visibility = View.VISIBLE
+                layoutItem.contentDescription = ""
 
                 when(device.type) {
                     BtDevice.BUS -> {

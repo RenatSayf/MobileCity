@@ -72,6 +72,8 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        speechVM.autoSpeak("Список всех видимых объектов")
+
         appPref.edit().putBoolean(KEY_FIRST_RUN, false).apply()
         arguments?.let { bundle ->
             val res = bundle.getInt(ARG_SPEECH)
@@ -109,10 +111,12 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
 
             btnToList.setOnClickListener {
                 mainVM.setDisplayMode(MainViewModel.DisplayMode.List)
+                speechVM.autoSpeak("Объекты списком")
             }
 
             btnToPage.setOnClickListener {
                 mainVM.setDisplayMode(MainViewModel.DisplayMode.Grid)
+                speechVM.autoSpeak("Объекты плиткой")
             }
 
             includeRadioGroup.rgFilter.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
@@ -122,12 +126,15 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                     when (checkedId) {
                         R.id.btn_all -> {
                             mainVM.setScreenState(MainViewModel.ScreenState.AllObjectsMode(mainVM.getDisplayMode()))
+                            speechVM.autoSpeak("Режим любые объекты")
                         }
                         R.id.btn_objects -> {
                             mainVM.setScreenState(MainViewModel.ScreenState.CityMode(mainVM.getDisplayMode()))
+                            speechVM.autoSpeak("Режим городские объекты")
                         }
                         R.id.btn_transport -> {
                             mainVM.setScreenState(MainViewModel.ScreenState.TransportMode(mainVM.getDisplayMode()))
+                            speechVM.autoSpeak("Режим транспорт")
                         }
                     }
                 }
@@ -158,7 +165,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                        with(includeRadioGroup) {
                            rgFilter.visibility = View.VISIBLE
                        }
-                        mainVM.setScreenState(MainViewModel.ScreenState.Init)
+                        //mainVM.setScreenState(MainViewModel.ScreenState.Init)
                         mainVM.startBtScan()
                     }
                     MainViewModel.BtState.NotSupportBT -> {
@@ -177,6 +184,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         progressBar.visibility = View.GONE
                         val message = "Ошибка блютуз сканирования. Код ${state.errorCode}"
                         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                        speechVM.autoSpeak(message)
                     }
                     is MainViewModel.BtState.ScanSuccess -> {
                         scanHandler?.removeCallbacksAndMessages(null)
@@ -310,7 +318,13 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         }
                     }
                     MainViewModel.BtState.StartScan -> {
-
+                        val message = "Поиск объектов..."
+                        showBtDeviceList(
+                            isList = false,
+                            isProgress = true,
+                            message = message
+                        )
+                        speechVM.autoSpeak(message)
                         scanHandler = runScanTimer(mainVM)
                     }
                     is MainViewModel.BtState.PermissionDenied -> {
@@ -337,11 +351,7 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
 
                 when(state) {
                     MainViewModel.ScreenState.Init -> {
-                        showBtDeviceList(
-                            isList = false,
-                            isProgress = true,
-                            message = "Поиск объектов..."
-                        )
+
                         includeRadioGroup.rgFilter.forEach {
                             it.isEnabled = true
                         }
@@ -358,17 +368,17 @@ class MainFragment : Fragment(), IBtDevicesAdapterListener {
                         btnToList.visibility = View.GONE
                     }
                     is MainViewModel.ScreenState.AllObjectsMode -> {
-                        speechVM.autoSpeak("Режим любые объекты")
+                        //speechVM.autoSpeak("Режим любые объекты")
                         displayDeviceList(mainVM.getDisplayMode())
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
                     is MainViewModel.ScreenState.CityMode -> {
-                        speechVM.autoSpeak("Режим городские объекты")
+                        //speechVM.autoSpeak("Режим городские объекты")
                         displayDeviceList(mainVM.getDisplayMode())
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
                     is MainViewModel.ScreenState.TransportMode -> {
-                        speechVM.autoSpeak("Режим транспорт")
+                        //speechVM.autoSpeak("Режим транспорт")
                         displayDeviceList(mainVM.getDisplayMode())
                         mainVM.setBtState(MainViewModel.BtState.ScanSuccess(mainVM.btDevices))
                     }
