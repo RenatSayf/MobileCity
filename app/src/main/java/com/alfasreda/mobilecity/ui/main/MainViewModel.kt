@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.le.AdvertiseSettings
 import android.os.CountDownTimer
 import androidx.lifecycle.*
+import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.di.BtRepositoryModule
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.repositories.bt.BtRepository
@@ -96,10 +97,14 @@ class MainViewModel(
 
                 btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
                     override fun onLeScan(device: BtDevice) {
-                        btDevices.first {
-                            it.id == device.id
-                        }.apply {
-                            bytes = device.bytes
+                        try {
+                            btDevices.first {
+                                it.id == device.id
+                            }.apply {
+                                bytes = device.bytes
+                            }
+                        } catch (e: NoSuchElementException) {
+                            if (BuildConfig.DEBUG) e.printStackTrace()
                         }
                     }
                 })
@@ -131,24 +136,32 @@ class MainViewModel(
         btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
             override fun onLeScan(device: BtDevice) {
 
-                if (countDownTimer == null) {
-                    countDownTimer = createRemovingTimer(::removeNotActiveDevice)
-                    countDownTimer?.start()
-                }
-                if (!btDevices.contains(device)) {
-                    btDevices.add(device)
-                    viewModelScope.launch {
-                        _btState.postValue(BtState.ScanSuccess(btDevices))
+                if (device.id != BtDevice.UNDEFINED) {
+                    if (countDownTimer == null) {
+                        countDownTimer = createRemovingTimer(::removeNotActiveDevice)
+                        countDownTimer?.start()
                     }
-                }
-                else {
-                    val btDevice = btDevices.first {
-                        it.id == device.id
-                    }.apply {
-                        this.rssi = device.rssi
-                        this.lastUpdateTime = device.lastUpdateTime
+                    if (!btDevices.contains(device)) {
+                        btDevices.add(device)
+                        viewModelScope.launch {
+                            _btState.postValue(BtState.ScanSuccess(btDevices))
+                        }
                     }
-                    _btState.value = BtState.UpdateData(btDevice)
+                    else {
+                        val btDevice: BtDevice? = try {
+                            btDevices.first {
+                                it.id == device.id
+                            }.apply {
+                                this.rssi = device.rssi
+                                this.lastUpdateTime = device.lastUpdateTime
+                            }
+
+                        } catch (e: NoSuchElementException) {
+                            if (BuildConfig.DEBUG) e.printStackTrace()
+                            null
+                        }
+                        _btState.value = btDevice?.let { BtState.UpdateData(it) }
+                    }
                 }
             }
         })
