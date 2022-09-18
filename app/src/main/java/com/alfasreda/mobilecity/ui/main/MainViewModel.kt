@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.bluetooth.le.AdvertiseSettings
 import android.os.CountDownTimer
 import androidx.lifecycle.*
-import com.alfasreda.mobilecity.BuildConfig
 import com.alfasreda.mobilecity.di.BtRepositoryModule
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.repositories.bt.BtRepository
@@ -97,14 +96,10 @@ class MainViewModel(
 
                 btRepository.startLowEnergyScan(object : BtRepository.IBtScanListener {
                     override fun onLeScan(device: BtDevice) {
-                        try {
-                            btDevices.first {
-                                it.id == device.id
-                            }.apply {
-                                bytes = device.bytes
-                            }
-                        } catch (e: NoSuchElementException) {
-                            if (BuildConfig.DEBUG) e.printStackTrace()
+                        btDevices.firstOrNull {
+                            it.id == device.id
+                        }.apply {
+                            this?.bytes = device.bytes
                         }
                     }
                 })
@@ -148,17 +143,11 @@ class MainViewModel(
                         }
                     }
                     else {
-                        val btDevice: BtDevice? = try {
-                            btDevices.first {
-                                it.id == device.id
-                            }.apply {
-                                this.rssi = device.rssi
-                                this.lastUpdateTime = device.lastUpdateTime
-                            }
-
-                        } catch (e: NoSuchElementException) {
-                            if (BuildConfig.DEBUG) e.printStackTrace()
-                            null
+                        val btDevice: BtDevice? = btDevices.firstOrNull {
+                            it.id == device.id
+                        }.apply {
+                            this?.rssi = device.rssi
+                            this?.lastUpdateTime = device.lastUpdateTime
                         }
                         _btState.value = btDevice?.let { BtState.UpdateData(it) }
                     }
