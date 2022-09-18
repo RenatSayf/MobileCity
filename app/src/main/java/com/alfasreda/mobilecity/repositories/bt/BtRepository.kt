@@ -10,7 +10,6 @@ import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import com.alfasreda.mobilecity.models.BtDevice
 import com.alfasreda.mobilecity.utils.toUtf8ByteArray
-import org.bouncycastle.util.Integers
 
 open class BtRepository {
 
